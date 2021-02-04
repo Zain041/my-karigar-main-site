@@ -1,0 +1,17 @@
+
+@media only screen and (max-width: 768px) {
+    .search-button{
+        width:100% !important;
+        background-color: #47b2e4;
+    }
+}
+
+.search-button{
+    background-color: #47b2e4 !important;
+    color:white !important;
+    font-weight: bold !important;
+}
+
+.cat-card{
+    height:300px !important;
+}

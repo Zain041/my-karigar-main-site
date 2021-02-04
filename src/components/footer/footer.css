@@ -1,0 +1,28 @@
+.footer-contact h3{
+    color:#66615B;
+    font-weight: bold;
+}
+.contact-text{
+    color: #66615B ;
+}
+.footer-contact p{
+    color:#2BA9CD !important;
+    font-weight: bold;
+}
+.footer-links h4{
+    color:#66615B;
+    font-weight: bold;
+}
+.footer-links ul li{
+    list-style-type: none;
+
+}
+.footer-links li a{
+    
+    font-weight: bold;
+}
+.footer-links li a:hover{
+    color:#6e6c69 !important;
+    font-weight: bold;
+
+}
