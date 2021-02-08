@@ -8,7 +8,7 @@ const initialState = {
     isAuthenticated: localStorage.getItem('isAuthenticated') === "true" ? true : false,
     user: localStorage.getItem('user') === "null" ? null : JSON.parse(localStorage.getItem('user')),
     loggedIn:JSON.parse(localStorage.getItem("loggedIn"))==null?false:true,
-    searchResults:[]
+    profile:[]
    
   
 }
@@ -32,6 +32,8 @@ export default function authReducer (state = initialState, action) {
                     searchResults: action.payload
                 }
         case LOGIN_SUCCESS:
+
+                console.log("payload",payload)
             localStorage.setItem('token', payload.token);
             localStorage.setItem('isAuthenticated', true)
             console.log('login suecess')
@@ -43,6 +45,8 @@ export default function authReducer (state = initialState, action) {
                 user: payload.user || null, 
                 token: payload.token,
                 isAuthenticated: true,
+                profile:payload.profile
+                
                
             }
        

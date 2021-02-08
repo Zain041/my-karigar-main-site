@@ -19,6 +19,7 @@ import React ,{Component} from "react";
 import { connect } from "react-redux";
 import { Link, Redirect } from "react-router-dom";
 import {LogIn} from '../../store/actions/authAction'
+import whiteLogo from '../../assets/img/white.png';
 
 // reactstrap components
 import {
@@ -34,6 +35,7 @@ import {
   Col,
 } from "reactstrap";
 import Alerts from "components/alerts/Alerts";
+import Loader from "react-loader-spinner";
 
 // core components
 
@@ -42,7 +44,8 @@ class Login extends Component {
     super(props);
     this.state={
       email:"",
-      password:""
+      password:"",
+      required:false
     }
   }
 
@@ -51,33 +54,37 @@ class Login extends Component {
     [e.target.name]:e.target.value
     })
   }
-  handleSubmit=(e)=>{
+  handleSubmit= async (e)=>{
     console.log("inside submit")
     e.preventDefault();
+    this.setState({
+      requested:true
+    })
 
-    this.props.LogIn({
+    await this.props.LogIn({
       email: this.state.email,
       password: this.state.password,
-    }).then(( async res=>{
+    })
       this.setState({
         email:"",
         password:""
       })
-    this.props.history.push('/user/home')
-    }));
-  }
-  render(){ 
-    var profile= JSON.parse(localStorage.getItem('profile'))
-    if (this.props.auth.isAuthenticated && profile.role==="provider" ) {
-      return <Redirect to="/user/provider-profile"/>
+ 
+        this.setState({
+          requested:false
+        })
     
-    }else if(this.props.auth.isAuthenticated && profile.role==="customer"){
-      return <Redirect to="/user/customer-profile"/>
-
+ 
+  
+  }
+  render (){ 
+   
+    if (this.props.auth.isAuthenticated ) {
+      return <Redirect to="/user/home"/>
+    
     }
-    // if(this.props.loggedIn===true){
-    //   return <Redirect to="/customer-profile"/>
-    // }
+   
+  
   return (
     <>
       <div
@@ -90,7 +97,10 @@ class Login extends Component {
           <Row>
             <Col className="mx-auto" lg="4" md="6">
               <Card className="card-register">
-                <h3 className="title mx-auto">My Karigar</h3>
+                <div className=" mx-auto">
+                <img  style={{height:'90px',width:'90px',borderRadius:'100px'}} className="mb-2" src={whiteLogo}  /> <br></br>
+                <span className="mx-auto pl-1  font-weight-bold">My Karigar</span> 
+                </div>
                
                 <Form className=" mt-5 register-form" onSubmit={this.handleSubmit}>
                   
@@ -119,8 +129,18 @@ class Login extends Component {
                     className="btn-round"
                     color="danger"
                    
-                  >
-                    LOGIN
+                  > 
+                   {this.state.requested ? (
+                  
+                  <Loader
+                  type="TailSpin"
+                  color="#fff"
+                  height={20}
+                  width={30}
+                />
+              ) : (
+                "LOGIN"
+              )}
                   </Button>
 
                 </Form>

@@ -1,5 +1,5 @@
 
-import { REGISTER_SUCCESS, REGISTER_FAIL, LOGIN_SUCCESS,  LOGIN_FAIL, FETCH_USERS, LOGOUT} from './types';
+import { UPDATE_PROFILE_FAIL,UPDATE_PROFILE_SUCCESS,FETCH_PROFILE,UPLOAD_PROFILE_FAIL,UPLOAD_PROFILE_SUCCESS} from './types';
 import { setAlert } from './alertActions'
 import axios from 'axios';
 
@@ -8,28 +8,34 @@ import axios from 'axios';
 import {RepositoryFactory} from '../../Repository/RepositoryFactory'
 import Repository from '../../Repository/Repository'
 var authRepository =RepositoryFactory.get("auth")
+var profileRepository=RepositoryFactory.get("profiles")
 
 
 
 
-export const register = (user)=> async dispatch => {
+export const updateProfile = (user)=> async dispatch => {
    
+    console.log("object",user)
                    
                       
                     try {
-                       let {data}=  await authRepository.register(user)
+
+                        console.log("inside try")
+                       let {data}=  await profileRepository.UpdateProfile(user)
                            console.log(data);
                             dispatch({
-                                type: REGISTER_SUCCESS,
+                                type: UPDATE_PROFILE_SUCCESS,
+                                payload:data
                               });
-                              dispatch(setAlert("Account Created Successfully", "success"));
+                              dispatch(setAlert("profile Updated Successfully", "success"));
+                              dispatch(fetchCurrentUserProfile());
                               
                        
                              
                         
                     }catch (error) {
                         dispatch({
-                            type: REGISTER_FAIL,
+                            type: UPDATE_PROFILE_FAIL,
                           });
                           dispatch(setAlert(error.message, "danger"));
                     }
@@ -38,28 +44,28 @@ export const register = (user)=> async dispatch => {
               
       
 }
-
-export const LogIn = (user)=> async dispatch => {
+export const uploadProfile = (avatar)=> async dispatch => {
+    console.log(avatar)
    
-                   
+                   console.log("inside action")
                       
     try {
-       let {data}=  await authRepository.logIn(user)
-           console.log(data);
-           Repository.defaults.headers['x-auth-token'] = data.token;
-            dispatch({
-               
-                type: LOGIN_SUCCESS,
+       let {data}=  await profileRepository.uploadProfile(avatar)
+       console.log("inside try")
+           console.log(data.profile.avatar);
+            dispatch(fetchCurrentUserProfile(),{
+                type: UPLOAD_PROFILE_SUCCESS,
                 payload:data
               });
-              dispatch(setAlert("logged in Successfully", "success"));
+              dispatch(setAlert("profile Uploaded Successfully", "success"));
+             
               
        
              
         
     }catch (error) {
         dispatch({
-            type: LOGIN_FAIL,
+            type: UPLOAD_PROFILE_FAIL,
           });
           dispatch(setAlert(error.message, "danger"));
     }
@@ -69,29 +75,35 @@ export const LogIn = (user)=> async dispatch => {
 
 }
 
-
-
-
-
-export const logout = () => async dispatch => {
-
+export const fetchCurrentUserProfile = ()=> async dispatch => {
+   
+                   
+                      
     try {
-            const token = await localStorage.getItem('token')
-        // let {data}=  await authRepository.logOut()
-
-        let data = await authRepository.logOut().then((res)=>{
+       let {data}=  await profileRepository.GetUserProfile()
+       console.log("dataaaaa",data)
+       localStorage.setItem('profile',JSON.stringify(data))
+          
+          
             dispatch({
-                type: LOGOUT,
-            });
-        });
-
+                type: FETCH_PROFILE,
+                payload:data
+              });
+             
+              
        
+             
         
-    } catch (error) {
-        
+    }catch (error) {
+       
+          dispatch(setAlert(error.message, "danger"));
     }
-    
+
+
+
+
 }
+
 
 // export const forgotPassword = (forgotEmail) => async dispatch => {
 //     console.log("inside fun")

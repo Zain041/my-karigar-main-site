@@ -20,6 +20,14 @@ import React,{Component} from "react";
 import { Link } from "react-router-dom";
 // nodejs library that concatenates strings
 import classnames from "classnames";
+import { withRouter } from 'react-router-dom';
+import whiteLogo from '../../assets/img/white.png';
+import GrayLogo from '../../assets/img/gray.png';
+import BlackLogo from '../../assets/img/logo-black.png';
+
+import {logout} from '../../store/actions/authAction'
+import img from '../../assets/img/default-avatar.png'
+import './navbar.css'
 
 // reactstrap components
 import {
@@ -36,6 +44,8 @@ import {
   DropdownMenu,
   Button
 } from "reactstrap";
+import { connect } from "react-redux";
+import Loader from "react-loader-spinner";
 
 class  NavBar extends Component {
   constructor(props){
@@ -45,7 +55,11 @@ class  NavBar extends Component {
      
       navbarCollapse:false,
       color:'',
-      border:''
+      border:'',
+      Graylogo:false,
+      requested:false,
+      link:"",
+      avatar:null
      
 
 
@@ -69,6 +83,7 @@ class  NavBar extends Component {
     ) {
       this.setState({
         navbarColor:"",
+        Graylogo:true
       
       })
      
@@ -78,6 +93,8 @@ class  NavBar extends Component {
     ) {
       this.setState({
         navbarColor:"navbar-transparent",
+        Graylogo:false
+       
        
 
       })
@@ -87,6 +104,14 @@ class  NavBar extends Component {
   };
 
 componentDidMount=() => {
+  var profile=JSON.parse(localStorage.getItem('profile'))
+ 
+
+  this.setState({
+    role:profile!=null?profile.role:"",
+    avatar:profile!=null?profile.avatar:""
+  })
+  
    
 
     window.addEventListener("scroll", this.updateNavbarColor);
@@ -96,22 +121,32 @@ componentDidMount=() => {
     };
   };
   render(){ 
+  console.log(this.state.avatar)
+   
+    const { history } = this.props;
   return (
     <Navbar
       className={classnames("fixed-top", this.state.navbarColor)}
       color-on-scroll="300"
       expand="lg"
     >
-      <Container>
+      <Container fluid>
         <div className="navbar-translate">
           <NavbarBrand
+          className=" pl-3 pt-0 pb-0"
             data-placement="bottom"
-            to="/index"
+            to="/"
             target="_blank"
            
             tag={Link}
           >
-            MY KARIGAR
+            {this.state.Graylogo===true?
+              <img src={GrayLogo} className="nav-logo" />
+              :
+              <img src={whiteLogo} className="nav-logo" />  
+          
+          }
+            
           </NavbarBrand>
           <button
             aria-expanded={this.state.navbarCollapse}
@@ -132,7 +167,7 @@ componentDidMount=() => {
         >
           <Nav navbar>
             <NavItem>
-              <NavLink to="/home" tag={Link}>
+              <NavLink to="/user/home" tag={Link}>
               
                  Home
               </NavLink>
@@ -201,6 +236,29 @@ componentDidMount=() => {
                 contact
               </NavLink>
             </NavItem>
+            <NavItem>
+              {this.state.role==="provider"?
+
+              <NavLink
+                to="/user/provider-profile" tag={Link}
+              
+                
+                
+              >
+                <img src={this.state.avatar!=null?this.state.avatar:img} className="nav-img" />
+                
+              </NavLink>:
+              <NavLink
+              to="/user/customer-profile" tag={Link}
+            
+              
+              
+            >
+              <img src={this.state.avatar!=null?this.state.avatar:img} className="nav-img" />
+              
+            </NavLink>
+  }
+            </NavItem>
            
             <NavItem>
               
@@ -216,13 +274,32 @@ componentDidMount=() => {
                 LOGIN
               </Button>
                 } */}
-                <Link to="/login">
-                <Button size="sm" className="btn-round  ml-1 mt-3 mb-0" color="primary"
+                
+                <Button onClick={()=>{
+                  this.setState({
+                    requested:true
+                  })
+                  this.props.logout().then((res)=>{
+                    this.setState({
+                      requested:false
+                    })
+                    history.push('/login')
+                  })
+                }} size="sm" className="btn-round  ml-1 mt-3 mb-0" color="primary"
                   outline  type="button">
-                 
-                  LOGIN
+                 {this.state.requested ? (
+                  
+                  <Loader
+                  type="TailSpin"
+                  color="#fff"
+                  height={20}
+                  width={30}
+                />
+              ) : (
+                "LOGOUT"
+              )}
                 </Button>
-                </Link>
+                
              
             </NavItem>
             
@@ -234,5 +311,9 @@ componentDidMount=() => {
   );
           }
 }
+const mapStateToProps = (state) => ({
+  auth: state.auth,
 
-export default NavBar;
+});
+
+export default withRouter (connect(mapStateToProps,{logout})( NavBar));

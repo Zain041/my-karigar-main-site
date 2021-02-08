@@ -28,6 +28,7 @@ import { connect } from "react-redux";
 import {register} from '../../store/actions/authAction'
 import Alerts from "components/alerts/Alerts";
 import {  Redirect } from "react-router-dom";
+import whiteLogo from '../../assets/img/white.png';
 
 
 class RegisterPage extends Component {
@@ -109,7 +110,10 @@ var user={
           <Row>
             <Col className="ml-auto mr-auto" lg="8">
               <Card className="card-register ml-auto mr-auto">
-                <h3 className="title mx-auto">My Karigar</h3>
+              <div className=" mx-auto">
+                <img  style={{height:'90px',width:'90px',borderRadius:'100px'}} className="mb-2" src={whiteLogo}  /> <br></br>
+                <span className="mx-auto pl-1  font-weight-bold">My Karigar</span> 
+                </div>
 
                 <Form className=" mt-3 register-form" onSubmit={this.handleSubmit}>
 
