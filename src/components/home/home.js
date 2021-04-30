@@ -40,6 +40,7 @@ import {
 import NavBar from "components/Navbars/Navbar.js";
 import IndexHeader from "components/Headers/IndexHeader.js";
 import DemoFooter from "components/Footers/DemoFooter.js";
+import { Link } from "react-router-dom";
 
 function LandingPage() {
   document.documentElement.classList.remove("nav-open");
@@ -66,19 +67,19 @@ function LandingPage() {
             <Col sm="3">
               
               <FormGroup>
-              <select className="   pl-0 pr-0 form-control">
-  <option>Select City </option>
-  <option>Default select</option>
-</select>
+              <Input   placeholder="Enter City" type="text" />
+ 
               </FormGroup>
             </Col>
             <Col className=" mr-auto pl-0 ml-0" sm="4">
             <Button color="default"    type="button" className="ml-0">
                   SEARCH
                 </Button>
+                <Link to="/user/post-requirements">
                 <Button color="default"  type="button"   className="ml-4">
                   POST YOUR REQUIREMENT
                 </Button>
+                </Link>
              
             </Col>
             
@@ -102,7 +103,7 @@ function LandingPage() {
             </Row>
             <br />
             <br />
-            <Row>
+            <Row >
               <Col  className="shadow-sm rounded" md="3">
                 <div className=" info">
                   <div className="icon icon-info">
@@ -133,9 +134,9 @@ function LandingPage() {
                   <div className="description">
                     <h4 className="mb-4 pb-1 font-weight-bold info-title">Painters</h4>
                    
-                    <Button className="btn-link" color="info" href="#pablo">
+                    <Link to="/user/painter"><Button className="btn-link" color="info" href="#pablo">
                       View Karigar's
-                    </Button>
+                    </Button></Link> 
                   </div>
                 </div>
               </Col>
@@ -151,9 +152,9 @@ function LandingPage() {
                   <div className="description">
                     <h4 className=" mb-4 pb-1 font-weight-bold info-title">Gardners</h4>
                    
-                    <Button className="btn-link" color="info" href="#pablo">
+                    <Link to="/user/gardner"><Button className="btn-link" color="info" href="#pablo">
                       View Karigar's
-                    </Button>
+                    </Button></Link> 
                   </div>
                 </div>
               </Col>
@@ -169,9 +170,9 @@ function LandingPage() {
                   <div className="description">
                     <h4 className="mb-4 pb-1 font-weight-bold info-title">Fabricator</h4>
                    
-                    <Button className="btn-link" color="info" href="#pablo">
+                    <Link to="/user/fabricator"><Button className="btn-link" color="info" href="#pablo">
                       View Karigar's
-                    </Button>
+                    </Button></Link> 
                   </div>
                 </div>
               </Col>
@@ -189,9 +190,9 @@ function LandingPage() {
                   <div className="description">
                     <h4 className=" mb-4 pb-1 font-weight-bold info-title">Electricians</h4>
                    
-                    <Button className="btn-link" color="info" href="#pablo">
+                    <Link to="/user/electricians"><Button className="btn-link" color="info" href="#pablo">
                       View Karigar's
-                    </Button>
+                    </Button></Link> 
                   </div>
                 </div>
               </Col>
@@ -207,9 +208,9 @@ function LandingPage() {
                   <div className="description">
                     <h4 className=" mb-4 pb-1 font-weight-bold info-title">Plumber</h4>
                    
-                    <Button className="btn-link" color="info" href="#pablo">
+                    <Link to="/user/plumber"><Button className="btn-link" color="info" href="#pablo">
                       View Karigar's
-                    </Button>
+                    </Button></Link> 
                   </div>
                 </div>
               </Col>
@@ -225,9 +226,9 @@ function LandingPage() {
                   <div className="description">
                     <h4 className="  mb-4 pb-1 font-weight-bold info-title">Mason</h4>
                    
-                    <Button className="btn-link" color="info" href="#pablo">
+                   <Link to="/user/mason"><Button className="btn-link" color="info" href="#pablo">
                       View Karigar's
-                    </Button>
+                    </Button></Link> 
                   </div>
                 </div>
               </Col>
@@ -243,9 +244,9 @@ function LandingPage() {
                   <div className="description">
                     <h4 className=" font-weight-bold  info-title">Repairing & Maintenance</h4>
                    
-                    <Button className="btn-link" color="info" href="#pablo">
+                    <Link to="/user/maintenance"><Button className="btn-link" color="info" href="#pablo">
                       View Karigar's
-                    </Button>
+                    </Button></Link> 
                   </div>
                 </div>
               </Col>
@@ -414,7 +415,10 @@ function LandingPage() {
             </Row>
           </Container>
         </div> */}
-        <div className="section bg-dark landing-section">
+        <div  style={{
+          backgroundImage:
+            "url(" + require("assets/img/banner1.PNG") + ")",
+        }} className="section bg-dark landing-section">
           <Container>
             <Row>
               <Col className="ml-auto mr-auto" md="8">

@@ -1,21 +1,4 @@
-/*!
 
-=========================================================
-* Paper Kit React - v1.2.0
-=========================================================
-
-* Product Page: https://www.creative-tim.com/product/paper-kit-react
-
-* Copyright 2020 Creative Tim (https://www.creative-tim.com)
-* Licensed under MIT (https://github.com/creativetimofficial/paper-kit-react/blob/master/LICENSE.md)
-
-* Coded by Creative Tim
-
-=========================================================
-
-* The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.
-
-*/
 import React,{Component} from "react";
 import img from '../../assets/img/default-avatar.png'
 
@@ -44,12 +27,12 @@ import {
 
 // core components
 import NavBar from "components/Navbars/Navbar.js";
-import ProfilePageHeader from "components/Headers/ProfilePageHeader.js";
+import ProfilePageHeader from "../../components/Headers/ProfilePageHeader";
 import DemoFooter from "components/Footers/DemoFooter.js";
 import Loader from "react-loader-spinner";
 import { connect } from "react-redux";
 import {fetchCurrentUserProfile,updateProfile,uploadProfile} from '../../store/actions/profileActions'
-import Alerts from "components/alerts/Alerts";
+import Alerts from "../../components/alerts/Alerts"
 import { Redirect } from "react-router";
 
 
@@ -105,50 +88,59 @@ class ProviderProfile extends Component {
     [e.target.name]:e.target.value
     })
   }
-  handleUploadImg=(e)=>{
+  handleUploadImg= async (e)=>{
     e.preventDefault();
 
     this.setState({
       requested:true
     })
 
-    this.props.uploadProfile(this.state.profileFile).then(res=>{
-      this.setState({
-        requested:false
-      })
-      this.modalToggle();
+   await  this.props.uploadProfile(this.state.profileFile)
+   this.props.fetchCurrentUserProfile()
+   setTimeout(() => {
+    this.setState({
+      requested:false,
+      avatar:this.props.profile.avatar,
     })
+    this.modalToggle();
+     
+   }, 3000);
+     
+   
   }
   
   componentDidMount= async () => {
 
     // setInterval(() => {
-      this.props.fetchCurrentUserProfile();
+     await  this.props.fetchCurrentUserProfile();
     // }, 1000);
 
     
 
-    let profile=JSON.parse(localStorage.getItem('profile'))
+    // let profile=JSON.parse(localStorage.getItem('profile'))
    
 
-    
-     
+    setTimeout(() => {
       this.setState({
       
      
-        fullName:profile.fullName!=null?profile.fullName:"",
-        avatar:profile.avatar!=null?profile.avatar:"",
-        phoneNumber:profile.phoneNumber!=null?profile.phoneNumber:"",
-        address:profile.address!=null?profile.address:"",
-        city:profile.city!=null?profile.city:"",
-        about:profile.about!=null?profile.city:"",
+        fullName:this.props.profile.fullName,
+        avatar:this.props.profile.avatar,
+        phoneNumber:this.props.profile.phoneNumber,
+        address:this.props.profile.address,
+        city:this.props.profile.city,
+        about:this.props.profile.about,
        
-        category:profile.category!=null?profile.category:"",
-        availableTimeStart:profile.availableTimeStart!=null?profile.availableTimeStart:"",
-        availableTimeEnd:profile.availableTimeEnd!=null?profile.availableTimeEnd:"",
-        experience:profile.experience!=null?profile.experience:""
+        category:this.props.profile.category,
+        availableTimeStart:this.props.profile.availableTimeStart,
+        availableTimeEnd:this.props.profile.availableTimeEnd,
+        experience:this.props.profile.experience
   
       })
+      
+    }, 3000);
+     
+     
       
     
 
@@ -241,6 +233,7 @@ class ProviderProfile extends Component {
                 className="img-circle img-no-padding img-responsive"
                 src={this.state.avatar!=""?this.state.avatar:require("assets/img/faces/kaci-baum-2.jpg")}
               />
+               <div style={{marginTop:'-30px',marginLeft:'77px'}} className={`text-success`} > <i  class="fas pr-2 fa-circle"></i></div>
               <span onClick={this.modalToggle} class="text-socondary" style={{cursor:'pointer',fontWeight:'normal'}} >
             <i class="fas fa-user-edit"></i> Change Profile
             </span>
@@ -422,7 +415,10 @@ class ProviderProfile extends Component {
               <Container>
           <Row>
             <Col className="ml-auto mr-auto" lg="8">
-              <Card className="bg-dark ">
+              <Card  style={{
+          backgroundImage:
+            "url(" + require("assets/img/banner1.PNG") + ")",
+        }} className="bg-dark ">
                 <h3 className="title  text-white font-weight-bold mx-auto">Edit Profile</h3>
 
                 <Form className="p-3" onSubmit={async (e)=>{
@@ -450,20 +446,30 @@ class ProviderProfile extends Component {
                        experience:this.state.experience
                    }
                     await this.props.updateProfile(obj)
+                      this.props.fetchCurrentUserProfile()
+
+                    setTimeout(() => {
+                     
+                      this.setState({
+                          requested:false,
+     
+                        fullName:this.props.profile.fullName,
+                        avatar:this.props.profile.avatar,
+                        phoneNumber:this.props.profile.phoneNumber,
+                        address:this.props.profile.address,
+                        city:this.props.profile.city,
+                        about:this.props.profile.about,
+                       
+                        category:this.props.profile.category,
+                        availableTimeStart:this.props.profile.availableTimeStart,
+                        availableTimeEnd:this.props.profile.availableTimeEnd,
+                        experience:this.props.profile.experience
                   
-                   this.setState({
-                    requested:false,
-                    fullName:"",
-                    phoneNumber:"",
-                    address:"",
-                    city:"",
-                    about:"",
+                      })
+                      
+                    }, 3000);
+                  
                    
-                    category:"",
-                    availableTimeStart:"",
-                    availableTimeEnd:"",
-                    experience:""
-                   })
                 }}>
 
                   <Input className="mt-3" name="fullName" value={this.state.fullName} onChange={this.handleChange}  placeholder="Full Name" type="text" required />

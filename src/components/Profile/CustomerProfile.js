@@ -1,21 +1,4 @@
-/*!
 
-=========================================================
-* Paper Kit React - v1.2.0
-=========================================================
-
-* Product Page: https://www.creative-tim.com/product/paper-kit-react
-
-* Copyright 2020 Creative Tim (https://www.creative-tim.com)
-* Licensed under MIT (https://github.com/creativetimofficial/paper-kit-react/blob/master/LICENSE.md)
-
-* Coded by Creative Tim
-
-=========================================================
-
-* The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.
-
-*/
 import React,{Component} from "react";
 import { connect } from "react-redux";
 
@@ -48,7 +31,7 @@ import Alerts from '../../components/alerts/Alerts'
 
 // core components
 import NavBar from "components/Navbars/Navbar.js";
-import ProfilePageHeader from "components/Headers/ProfilePageHeader.js";
+import ProfilePageHeader from "../../components/Headers/ProfilePageHeader";
 import DemoFooter from "components/Footers/DemoFooter.js";
 import { Redirect } from "react-router";
 import {fetchCurrentUserProfile,updateProfile,uploadProfile} from '../../store/actions/profileActions'
@@ -113,49 +96,55 @@ class CustomerProfile extends Component {
     })
 
     await  this.props.uploadProfile(this.state.profileFile)
-      let profile=JSON.parse(localStorage.getItem('profile'))
-      
-          this.setState({
-            requested:false,
-            avatar:profile.avatar
-    
-          })       
-      this.modalToggle()
+     this.props.fetchCurrentUserProfile()
+
+      setTimeout(() => {
+        this.setState({
+          requested:false,
+          avatar:this.props.profile.avatar
+  
+        })       
+    this.modalToggle()
+      }, 3000);
+         
     
     
     
     }
 
   
-  componentDidMount=() => {
+  componentDidMount= async () => {
 
     // setInterval(() => {
-      this.props.fetchCurrentUserProfile();
+      await this.props.fetchCurrentUserProfile();
     // }, 1000);
 
     
 
-    let profile=JSON.parse(localStorage.getItem('profile'))
+    
    
 
     
      
+    setTimeout(() => {
       this.setState({
       
      
-        fullName:profile.fullName!=null?profile.fullName:"",
-        avatar:profile.avatar!=null?profile.avatar:"",
-        phoneNumber:profile.phoneNumber!=null?profile.phoneNumber:"",
-        address:profile.address!=null?profile.address:"",
-        city:profile.city!=null?profile.city:"",
-        about:profile.about!=null?profile.about:"",
+        fullName:this.props.profile.fullName,
+        avatar:this.props.profile.avatar,
+        phoneNumber:this.props.profile.phoneNumber,
+        address:this.props.profile.address,
+        city:this.props.profile.city,
+        about:this.props.profile.about,
        
-        category:profile.category!=null?profile.category:"",
-        availableTimeStart:profile.availableTimeStart!=null?profile.availableTimeStart:"",
-        availableTimeEnd:profile.availableTimeEnd!=null?profile.availableTimeEnd:"",
-        experience:profile.experience!=null?profile.experience:""
+        category:this.props.profile.category,
+        availableTimeStart:this.props.profile.availableTimeStart,
+        availableTimeEnd:this.props.profile.availableTimeEnd,
+        experience:this.props.profile.experience
   
       })
+      
+    }, 3000);
     document.documentElement.classList.remove("nav-open");
     document.body.classList.add("landing-page");
     return function cleanup() {
@@ -245,6 +234,7 @@ class CustomerProfile extends Component {
                 className="img-circle img-no-padding img-responsive"
                 src={this.state.avatar!=""?this.state.avatar:require("assets/img/faces/kaci-baum-2.jpg")}
               />
+              <div style={{marginTop:'-30px',marginLeft:'77px'}} className={`text-success`} > <i  class="fas pr-2 fa-circle"></i></div>
               <span onClick={this.modalToggle} class="text-socondary" style={{cursor:'pointer',fontWeight:'normal'}} >
             <i class="fas fa-user-edit"></i> Change Profile
             </span>
@@ -427,20 +417,29 @@ class CustomerProfile extends Component {
                       experience:this.state.experience
                   }
                    await this.props.updateProfile(obj)
+                   this.props.fetchCurrentUserProfile()
                  
-                  this.setState({
-                   requested:false,
-                   fullName:"",
-                   phoneNumber:"",
-                   address:"",
-                   city:"",
-                   about:"",
+                   setTimeout(() => {
+                    this.setState({
+                      requested:false,
+       
+      
+                     fullName:this.props.profile.fullName,
+                     avatar:this.props.profile.avatar,
+                     phoneNumber:this.props.profile.phoneNumber,
+                     address:this.props.profile.address,
+                     city:this.props.profile.city,
+                     about:this.props.profile.about,
+                    
+                     category:this.props.profile.category,
+                     availableTimeStart:this.props.profile.availableTimeStart,
+                     availableTimeEnd:this.props.profile.availableTimeEnd,
+                     experience:this.props.profile.experience
+               
+                   })
+                     
+                   }, 3000);
                   
-                   category:"",
-                   availableTimeStart:"",
-                   availableTimeEnd:"",
-                   experience:""
-                  })
                }}>
 
                  <Input className="mt-3" name="fullName" value={this.state.fullName} onChange={this.handleChange}  placeholder="Full Name" type="text" required />

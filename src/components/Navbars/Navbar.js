@@ -104,13 +104,16 @@ class  NavBar extends Component {
   };
 
 componentDidMount=() => {
-  var profile=JSON.parse(localStorage.getItem('profile'))
+  setInterval(() => {
+    var profile=JSON.parse(localStorage.getItem('profile'))
  
 
   this.setState({
     role:profile!=null?profile.role:"",
     avatar:profile!=null?profile.avatar:""
   })
+  }, 3000);
+  
   
    
 
@@ -136,7 +139,7 @@ componentDidMount=() => {
           className=" pl-3 pt-0 pb-0"
             data-placement="bottom"
             to="/"
-            target="_blank"
+            
            
             tag={Link}
           >
@@ -177,46 +180,46 @@ componentDidMount=() => {
                 Karigar
               </DropdownToggle>
               <DropdownMenu right>
-                <DropdownItem>
+              <Link to="/user/carpentor">  <DropdownItem>
                   Carpentor
-                </DropdownItem>
-                <DropdownItem>
+                </DropdownItem></Link>
+                <Link to="/user/plumber"> <DropdownItem>
                   Plumber
-                </DropdownItem>
-                <DropdownItem>
+                </DropdownItem></Link>
+                <Link to="/user/fabricator"> <DropdownItem>
                   Fabricator
-                </DropdownItem>
-                <DropdownItem>
+                </DropdownItem></Link>
+               <Link to="/user/mason"> <DropdownItem>
                   Mason
-                </DropdownItem>
-                <DropdownItem>
+                </DropdownItem></Link>
+                <Link to="/user/painter"> <DropdownItem>
                   Painter
-                </DropdownItem>
-                <DropdownItem>
+                </DropdownItem></Link>
+                <Link to="/user/electricians">   <DropdownItem>
                   Electrician
-                </DropdownItem>
-                <DropdownItem>
+                </DropdownItem></Link>
+                <Link to="/user/maintenance"> <DropdownItem>
                 Repairing & Maintenance
-                </DropdownItem>
-                <DropdownItem>
+                </DropdownItem></Link>
+                <Link to="/user/gardner"> <DropdownItem>
                   Gardner
-                </DropdownItem>
+                </DropdownItem></Link>
               </DropdownMenu>
             </UncontrolledDropdown>
             <NavItem>
               <NavLink
-              to="" tag={Link}
+              to="/user/about" tag={Link}
                
-                target="_blank"
+               
               >
                 About
               </NavLink>
             </NavItem>
             <NavItem>
               <NavLink
-              to="" tag={Link}
+              to="/user/services" tag={Link}
                
-                target="_blank"
+               
                
               >
                Services
@@ -227,9 +230,9 @@ componentDidMount=() => {
             <NavItem>
 
               <NavLink
-                to="" tag={Link}
+                to="/user/contact" tag={Link}
               
-                target="_blank"
+                
                 
               >
                 
@@ -246,7 +249,7 @@ componentDidMount=() => {
                 
               >
                 <img src={this.state.avatar!=null?this.state.avatar:img} className="nav-img" />
-                
+                <div style={{marginTop:'-17px',marginLeft:'40px'}} className={`text-success`} > <i style={{fontSize:'8px'}}  class="fas fa-xs pr-2 fa-circle"></i></div>
               </NavLink>:
               <NavLink
               to="/user/customer-profile" tag={Link}
@@ -255,7 +258,7 @@ componentDidMount=() => {
               
             >
               <img src={this.state.avatar!=null?this.state.avatar:img} className="nav-img" />
-              
+              <div style={{marginTop:'-17px',marginLeft:'40px'}} className={`text-success`} > <i style={{fontSize:'8px'}}  class="fas pr-2 fa-xs fa-circle"></i></div>
             </NavLink>
   }
             </NavItem>
@@ -313,6 +316,7 @@ componentDidMount=() => {
 }
 const mapStateToProps = (state) => ({
   auth: state.auth,
+  profile:state.profile.profile
 
 });
 

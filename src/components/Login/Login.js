@@ -1,19 +1,3 @@
-// /*!
-
-// =========================================================
-// * Paper Kit React - v1.2.0
-// =========================================================
-
-// * Product Page: https://www.creative-tim.com/product/paper-kit-react
-
-// * Copyright 2020 Creative Tim (https://www.creative-tim.com)
-// * Licensed under MIT (https://github.com/creativetimofficial/paper-kit-react/blob/master/LICENSE.md)
-
-// * Coded by Creative Tim
-
-// =========================================================
-
-// * The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.
 
 import React ,{Component} from "react";
 import { connect } from "react-redux";
@@ -34,7 +18,7 @@ import {
   Row,
   Col,
 } from "reactstrap";
-import Alerts from "components/alerts/Alerts";
+import Alerts from "../../components/alerts/Alerts"
 import Loader from "react-loader-spinner";
 
 // core components
@@ -90,7 +74,7 @@ class Login extends Component {
       <div
         className="section section-image section-login"
         style={{
-          backgroundImage: "url(" + require("assets/img/login-image.jpg") + ")",
+          backgroundImage: "url(" + require("assets/img/banner1.PNG") + ")",
         }}
       >
         <Container>

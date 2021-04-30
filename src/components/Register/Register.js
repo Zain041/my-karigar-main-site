@@ -26,7 +26,7 @@ import NavBar from "components/Navbars/Navbar.js";
 import { Link } from "react-router-dom";
 import { connect } from "react-redux";
 import {register} from '../../store/actions/authAction'
-import Alerts from "components/alerts/Alerts";
+import Alerts from "../../components/alerts/Alerts"
 import {  Redirect } from "react-router-dom";
 import whiteLogo from '../../assets/img/white.png';
 
@@ -102,7 +102,7 @@ var user={
       <div
         className="page-header"
         style={{
-          backgroundImage: "url(" + require("assets/img/login-image.jpg") + ")",
+          backgroundImage: "url(" + require("assets/img/banner1.PNG") + ")",
         }}
       >
         <div className="filter" />

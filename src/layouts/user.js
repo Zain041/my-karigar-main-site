@@ -3,9 +3,8 @@ import React from "react";
 import { Route, Switch, Redirect } from "react-router-dom";
 // reactstrap components
 import { Container } from "reactstrap";
-// core components
-import AdminNavbar from "../components/Navbars/AdminNavbar";
-// import AdminFooter from "components/Footers/AdminFooter.js";
+
+
 import Navbar from "../components/Navbars/Navbar";
 
 import routes from "../components/routes";
@@ -46,7 +45,7 @@ class User extends React.Component {
     return "Brand";
   };
   render() {
-    if (this.props.loggedIn === false) {
+    if (this.props.isAuthenticated === false) {
 			return <Redirect to="/auth/login" />;
 		}
     return (
@@ -82,12 +81,12 @@ class User extends React.Component {
 }
 export function mapStateToProps(state) {
 	return {
-    state
+    state,
 	
 		// user: state.auth.user,
 		// notification: state.auth.notification,
 		// msg: state.auth.msg,
-		// loggedIn:state.auth.loggedIn
+		isAuthenticated:state.auth.isAuthenticated
 		
 	};
 }
