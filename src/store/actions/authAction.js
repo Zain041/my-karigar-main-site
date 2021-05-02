@@ -31,7 +31,12 @@ export const register = (user)=> async dispatch => {
                         dispatch({
                             type: REGISTER_FAIL,
                           });
-                          dispatch(setAlert(error.message, "danger"));
+                          if(error.message=="Request failed with status code 405"){
+                            dispatch(setAlert("user alredy exists", "danger"));
+                
+                          }else{
+                            dispatch(setAlert("Password must include one lowercase character, one uppercase character, a number, and a special character", "danger"));
+                          }
                     }
                 
       
@@ -58,10 +63,15 @@ export const LogIn = (user)=> async dispatch => {
              
         
     }catch (error) {
+       
         dispatch({
             type: LOGIN_FAIL,
           });
-          dispatch(setAlert(error.message, "danger"));
+         
+            dispatch(setAlert(error.message, "danger"));
+
+         
+         
     }
 
 

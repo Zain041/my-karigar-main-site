@@ -1,6 +1,7 @@
 
 import authRepository from './authRepository'
 import profileRepository from './profileRepository';
+import servicesRepository from './servicesRepository';
 
 
 
@@ -9,7 +10,8 @@ const repositories = {
 
   
   auth:authRepository,
-  profiles:profileRepository
+  profiles:profileRepository,
+  services:servicesRepository
 
 
  

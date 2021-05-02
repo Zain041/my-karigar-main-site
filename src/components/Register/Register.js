@@ -72,6 +72,9 @@ var user={
   this.props
     .register(user)
     .then((res) => {
+      if(this.props.auth.isRegistered==true){
+
+     
       this.props.history.push('/auth/login')
      this.setState({
       email:"",
@@ -80,6 +83,7 @@ var user={
       phoneNumber:"",
       role:"",
      })
+    }
       // console.log(this.props.auth.isRegistered);
       // if (this.props.auth.isRegistered === true) {
       //   this.setState({ redirect: true });

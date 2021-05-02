@@ -30,7 +30,7 @@ import { Link } from 'react-router-dom'
                                <div className={` icon-online  ${items.onlineStatus=="online"?"text-success":"text-secondary opacity-4"}`} > <i  class="fas pr-2 fa-circle"></i>{items.onlineStatus}</div>
                                    <h4 className="font-weight-bold mb-3">{items.fullName}</h4>
                                    <span className="text-dark font-weight-bold ">{items.category}</span><br></br>
-                                 <Link to={`preview-profile/${items._id}`}> <Button className="mt-3" >View Profile</Button></Link> 
+                                 <Link to={`preview-profile/${items.user}`}> <Button className="mt-3" >View Profile</Button></Link> 
                                   
                                </CardBody>
                               

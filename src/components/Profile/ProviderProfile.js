@@ -1,6 +1,7 @@
 
 import React,{Component} from "react";
 import img from '../../assets/img/default-avatar.png'
+import '../../assets/css/providerProfile.css'
 
 // reactstrap components
 import {
@@ -32,6 +33,7 @@ import DemoFooter from "components/Footers/DemoFooter.js";
 import Loader from "react-loader-spinner";
 import { connect } from "react-redux";
 import {fetchCurrentUserProfile,updateProfile,uploadProfile} from '../../store/actions/profileActions'
+import {AddServices,FetchServices,UpdateServices,DeleteServices} from '../../store/actions/servicesActions'
 import Alerts from "../../components/alerts/Alerts"
 import { Redirect } from "react-router";
 
@@ -42,6 +44,11 @@ class ProviderProfile extends Component {
   constructor(props){
     super(props);
     this.state={
+      id:'',
+      editModal:false,
+      deleteModal:false,
+      title:'',
+      description:'',
       activeTab:"1",
       email:"",
       modal:false,
@@ -64,6 +71,16 @@ class ProviderProfile extends Component {
   modalToggle = () => {
     this.setState({
       modal: !this.state.modal,
+    });
+  };
+  editToggle = () => {
+    this.setState({
+      editModal: !this.state.editModal,
+    });
+  };
+  deleteToggle = () => {
+    this.setState({
+      deleteModal: !this.state.deleteModal,
     });
   };
   
@@ -108,11 +125,33 @@ class ProviderProfile extends Component {
      
    
   }
+  handleServices= async (e)  =>{
+    e.preventDefault()
+
+    let user= JSON.parse(localStorage.getItem('user'))
+    console.log(user._id)
+    const obj={
+      title:this.state.title,
+      description:this.state.description
+    }
+    this.setState({
+      requested:true
+    })
+    await this.props.AddServices(obj,user._id);
+    this.setState({
+      requested:false,
+      title:'',
+      description:'',
+    })
+  }
   
   componentDidMount= async () => {
+    let user= JSON.parse(localStorage.getItem('user'))
+    console.log(user._id)
 
     // setInterval(() => {
      await  this.props.fetchCurrentUserProfile();
+     await this.props.FetchServices(user._id)
     // }, 1000);
 
     
@@ -151,16 +190,50 @@ class ProviderProfile extends Component {
       document.body.classList.remove("landing-page");
     };
   };
+  updateService= async (e)=>{
+    e.preventDefault()
+    let user= JSON.parse(localStorage.getItem('user'))
+    console.log(user._id)
+    const obj={
+      title:this.state.title,
+      description:this.state.description,
+      id:this.state.id
+    }
+    this.setState({
+      requested:true
+    })
+    await this.props.UpdateServices(obj,user._id);
+    this.editToggle()
+    this.setState({
+      requested:false,
+      title:'',
+      description:'',
+      id:''
+    })
 
-  handleSubmit=(e)=>{
-   
   }
+
+  DeleteService= async ()=>{
+    let user= JSON.parse(localStorage.getItem('user'))
+    this.setState({
+      requested:true
+    })
+    await this.props.DeleteServices(this.state.id,user._id)
+    this.setState({
+      requested:false
+    })
+    this.deleteToggle()
+
+
+  }
+ 
+  
   render(){
     // if(this.props.auth.isAuthenticated){
     //   return <Redirect to="/auth/login"/>
     // }
     
-   
+   console.log(this.props.services)
     
   return (
     <>
@@ -220,6 +293,110 @@ class ProviderProfile extends Component {
               </Modal>
 
     {/* end */}
+    {/* edit service modal */}
+    <Modal isOpen={this.state.editModal} toggle={this.editToggle}>
+                <ModalHeader toggle={this.EditToggle}>
+                <h3 className="font-weight-bold p-4">Edit  Service</h3>
+                </ModalHeader>
+                <ModalBody>
+                          
+                          <Form className="p-4" onSubmit={this.updateService}>
+                            <Label className="mb-3 mt-3 font-weight-bold" >
+                              Title
+                             
+                            </Label>
+                            <Input
+                           placeholder="Title Here..."
+                                onChange={this.handleChange}
+                                type="text"
+                                value={this.state.title}
+                                name="title"
+                                required
+                              />
+                               <Label className="mb-3 mt-3 font-weight-bold" >
+                              Description
+                             
+                            </Label>
+                            <Input
+                            placeholder="Description Here...."
+                                onChange={this.handleChange}
+                                type="textarea"
+                                rows="4"
+                                value={this.state.description}
+                                name="description"
+                                required
+                              />
+                              {this.state.title}
+                              {this.state.description}
+                              <Alerts/>
+                            
+                        
+                        
+                    
+                    
+                    
+                   
+                   
+                   
+                    <ModalFooter className="mt-3">
+                      <Button  className="mt-2" color="secondary" onClick={this.editToggle}>
+                        cancel
+                      </Button>{" "}
+                      <Button color="primary"
+                      type="submit"
+                      className="mt-2"
+                      
+                      // disabled={this.state.filesUrl.length<5}
+                      >
+                        {this.state.requested ? (
+                          <Loader
+                            type="TailSpin"
+                            color="#fff"
+                            height={20}
+                            width={30}
+                          />
+                        ) : (
+                          "Save"
+                        )}
+                      </Button>
+                    </ModalFooter>
+                  </Form>
+                </ModalBody>
+              </Modal>
+              {/* delete modal */}
+              <Modal isOpen={this.state.deleteModal} toggle={this.deleteToggle}>
+                <ModalHeader toggle={this.EditToggle}>
+                <h3 className="font-weight-bold p-4">Delete   Service</h3>
+                </ModalHeader>
+                <ModalBody>
+                   <h4 className="font-weight-bold text-danger text-center">Are you Sure You Want To Delete Item !</h4>
+                   
+                  
+                    <ModalFooter className="mt-3">
+                      <Button className="mt-2" color="secondary" onClick={this.deleteToggle}>
+                        cancel
+                      </Button>{" "}
+                      <Button color="danger"
+                       className="mt-2"
+                      onClick={this.DeleteService}
+                      
+                      // disabled={this.state.filesUrl.length<5}
+                      >
+                        {this.state.requested ? (
+                          <Loader
+                            type="TailSpin"
+                            color="#fff"
+                            height={20}
+                            width={30}
+                          />
+                        ) : (
+                          "Delete"
+                        )}
+                      </Button>
+                    </ModalFooter>
+                  
+                </ModalBody>
+              </Modal>
       <NavBar />
       <ProfilePageHeader />
       <div className="section profile-content">
@@ -331,63 +508,101 @@ class ProviderProfile extends Component {
           <TabContent className="following" activeTab={this.state.activeTab}>
             <TabPane tabId="1" id="follows">
               <Row>
-                <Col className="ml-auto mr-auto" md="6">
+                <Col className="ml-auto mr-auto" md="12">
                   <ul className="list-unstyled follows">
                     <li>
                       <Row>
-                        <Col className="ml-auto mr-auto" lg="2" md="4" xs="4">
-                          {/* <img
-                            alt="..."
-                            className="img-circle img-no-padding img-responsive"
-                            src={require("assets/img/faces/clem-onojeghuo-2.jpg")}
-                          /> */}
-                        </Col>
-                        <Col className="ml-auto mr-auto" lg="7" md="4" xs="4">
-                          <h6>
-                            Chappal Making <br />
-                            <small>We have best Hand Made Chapals </small>
-                          </h6>
-                        </Col>
-                        <Col className="ml-auto mr-auto" lg="3" md="4" xs="4">
-                          <FormGroup check>
-                            <Label check>
-                              <Input
-                                defaultChecked
-                                defaultValue=""
-                                type="checkbox"
+                      <Col  className="ml-auto mr-auto " lg="6" md="6" xs="12">
+                         <h3 className="font-weight-bold  mt-5 mb-3">Services</h3>
+                         <div className="scrol">
+                        {this.props.services.length!=0?this.props.services.map((items,index)=>{
+                          return(
+                           
+                               <>
+                            <h6>
+                              {items.title}<br />
+                              <small>{items.description} </small><span className="pr-3" style={{float:'right'}}><i onClick={()=>{
+                                this.setState({
+                                  title:items.title,
+                                  description:items.description,
+                                  id:items._id
+                                })
+                                this.editToggle()
+                                
+                                }} style={{cursor:'pointer'}} className="fas fa-edit text-success mr-2"></i> <i onClick={()=>{
+                                  
+                                  this.setState({
+                                    id:items._id
+                                  })
+                                  this.deleteToggle()}} style={{cursor:'pointer'}} className="fas fa-trash text-danger"></i></span>
+                            </h6>
+                            <hr></hr>
+                            </>
+                           
+                         
+                          )
+                        }):<Col className="ml-auto mr-auto text-center" lg="6" md="6" xs="12"> <Loader
+                        type="TailSpin"
+                        color="red"
+                        height={20}
+                        width={30}
+                      />
+                      </Col>}
+                      </div>
+                      </Col>
+                      
+                       
+                       
+                       
+                        <Col style={{borderLeft:'2px solid #F1EAE0'}} className="ml-auto mr-auto" lg="6" md="6" xs="12">
+                          <Card>
+                          <h3 className="font-weight-bold p-4">Add New Service</h3>
+                          <Form className="p-4" onSubmit={this.handleServices}>
+                            <Label className="mb-3 mt-3 font-weight-bold" >
+                              Title
+                             
+                            </Label>
+                            <Input
+                           placeholder="Title Here..."
+                                onChange={this.handleChange}
+                                type="text"
+                                value={this.state.title}
+                                name="title"
+                                required
                               />
-                              <span className="form-check-sign" />
+                               <Label className="mb-3 mt-3 font-weight-bold" >
+                              Description
+                             
                             </Label>
-                          </FormGroup>
+                            <Input
+                            placeholder="Description Here...."
+                                onChange={this.handleChange}
+                                type="textarea"
+                                rows="4"
+                                value={this.state.description}
+                                name="description"
+                                required
+                              />
+                              <Alerts/>
+                              <Button className="mt-3" color="danger" type="submit">
+                              {this.state.requested ? (
+                          <Loader
+                            type="TailSpin"
+                            color="#fff"
+                            height={20}
+                            width={30}
+                          />
+                        ) : (
+                          "Add"
+                        )}
+                              </Button>
+                          </Form>
+                          </Card>
                         </Col>
                       </Row>
                     </li>
-                    <hr />
-                    <li>
-                      <Row>
-                        <Col className="mx-auto" lg="2" md="4" xs="4">
-                          {/* <img
-                            alt="..."
-                            className="img-circle img-no-padding img-responsive"
-                            src={require("assets/img/faces/ayo-ogunseinde-2.jpg")}
-                          /> */}
-                        </Col>
-                        <Col lg="7" md="4" xs="4">
-                          <h6>
-                            Shoes Making <br />
-                            <small>We Offer Best Hand Made Shoes</small>
-                          </h6>
-                        </Col>
-                        <Col lg="3" md="4" xs="4">
-                          <FormGroup check>
-                            <Label check>
-                              <Input defaultValue="" type="checkbox" />
-                              <span className="form-check-sign" />
-                            </Label>
-                          </FormGroup>
-                        </Col>
-                      </Row>
-                    </li>
+                  
+                    
                   </ul>
                 </Col>
               </Row>
@@ -532,7 +747,15 @@ class ProviderProfile extends Component {
 const  mapStateToProps = (state) => ({
   auth:state.auth,
   profile: state.profile.profile,
-  avatar:state.profile.avatar
+  avatar:state.profile.avatar,
+  services:state.service.services
 
 });
-export default connect(mapStateToProps,{updateProfile,fetchCurrentUserProfile,uploadProfile})( ProviderProfile);
+export default connect(mapStateToProps,
+  {updateProfile,
+  fetchCurrentUserProfile,
+  uploadProfile,AddServices,
+  UpdateServices,
+  DeleteServices,
+  FetchServices}
+  )( ProviderProfile);
