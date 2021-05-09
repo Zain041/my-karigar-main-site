@@ -8,6 +8,7 @@ import {
   Button,
   Label,
   FormGroup,
+  Table,
   Input,
   NavItem,
   NavLink,
@@ -34,8 +35,18 @@ import Loader from "react-loader-spinner";
 import { connect } from "react-redux";
 import {fetchCurrentUserProfile,updateProfile,uploadProfile} from '../../store/actions/profileActions'
 import {AddServices,FetchServices,UpdateServices,DeleteServices} from '../../store/actions/servicesActions'
+import { FetchAppointments,UpdateAppointmentStatus } from '../../store/actions/appointmentActions'
+import {FetchIncomingJobRequests,
+  AcceptJobRequest,
+  RejectJobRequest,
+  FetchRequestCompleteJobAsSeller,
+  FetchOngoingJobsAsSeller,
+  ChangeJobStatus,
+  FetchIncompletedJobAsSeller,
+  FetchCompletedJobAsSeller} from '../../store/actions/jobActions'
 import Alerts from "../../components/alerts/Alerts"
 import { Redirect } from "react-router";
+import moment from 'moment'
 
 
 class ProviderProfile extends Component {
@@ -44,6 +55,7 @@ class ProviderProfile extends Component {
   constructor(props){
     super(props);
     this.state={
+      providerId:'',
       id:'',
       editModal:false,
       deleteModal:false,
@@ -152,6 +164,19 @@ class ProviderProfile extends Component {
     // setInterval(() => {
      await  this.props.fetchCurrentUserProfile();
      await this.props.FetchServices(user._id)
+     await this.props.FetchAppointments()
+     
+     await this.props.FetchIncomingJobRequests()
+
+     await this.props.FetchOngoingJobsAsSeller()
+
+     await this.props.FetchRequestCompleteJobAsSeller()
+
+     await this.props.FetchCompletedJobAsSeller()
+
+     await this.props.FetchIncompletedJobAsSeller()
+
+    
     // }, 1000);
 
     
@@ -169,6 +194,7 @@ class ProviderProfile extends Component {
         address:this.props.profile.address,
         city:this.props.profile.city,
         about:this.props.profile.about,
+        providerId:this.props.profile.user,
        
         category:this.props.profile.category,
         availableTimeStart:this.props.profile.availableTimeStart,
@@ -233,7 +259,7 @@ class ProviderProfile extends Component {
     //   return <Redirect to="/auth/login"/>
     // }
     
-   console.log(this.props.services)
+ 
     
   return (
     <>
@@ -465,7 +491,7 @@ class ProviderProfile extends Component {
                       this.toggle("2");
                     }}
                   >
-                    Manage  Appointments
+                    Manage  Appointments<Badge className="ml-1 rounded-circle" color="success">{this.props.appointments.filter(item=>item.providerId==this.state.providerId).length}</Badge>
                   </NavLink>
                 </NavItem>
                 <NavItem>
@@ -479,15 +505,63 @@ class ProviderProfile extends Component {
                     Manage Location
                   </NavLink>
                 </NavItem>
+                
                 <NavItem>
                   <NavLink
                   style={{cursor:'pointer'}}
-                    className={` font-weight-bold ${this.state.activeTab === "4" ? "active" : ""}`}
+                    className={` font-weight-bold ${this.state.activeTab === "6" ? "active" : ""}`}
                     onClick={() => {
-                      this.toggle("4");
+                      this.toggle("6");
                     }}
                   >
-                    Active Jobs <Badge href="#" className="ml-1 rounded-circle" color="danger">3</Badge>
+                    Job Requests <Badge href="#" className="ml-1 rounded-circle" color="danger">{this.props.incomingRequests.length}</Badge>
+                  </NavLink>
+                </NavItem>
+               
+                <NavItem>
+                  <NavLink
+                  style={{cursor:'pointer'}}
+                    className={` font-weight-bold ${this.state.activeTab === "8" ? "active" : ""}`}
+                    onClick={() => {
+                      this.toggle("8");
+                    }}
+                  >
+                    Ongoing Jobs<Badge className="ml-1 rounded-circle" color="success">{this.props.sellerOngoingJobs.length}</Badge>
+                  </NavLink>
+                </NavItem>
+                <NavItem>
+                  <NavLink
+                  style={{cursor:'pointer'}}
+                    className={` font-weight-bold ${this.state.activeTab === "9" ? "active" : ""}`}
+                    onClick={() => {
+                      this.toggle("9");
+                    }}
+                  >
+                    Request Complete Jobs <Badge href="#" className="ml-1 rounded-circle" color="danger">{this.props.sellerRequestCompleteJobs.length}</Badge>
+                  </NavLink>
+                </NavItem>
+               
+               
+                <NavItem>
+                  <NavLink
+                  style={{cursor:'pointer'}}
+                    className={` font-weight-bold ${this.state.activeTab === "12" ? "active" : ""}`}
+                    onClick={() => {
+                      this.toggle("12");
+                    }}
+                  >
+                    Completed Jobs <Badge href="#" className="ml-1 rounded-circle" color="danger">{this.props.sellerCompletedJobs.length}</Badge>
+                  </NavLink>
+                </NavItem>
+                <NavItem>
+                  <NavLink
+                  style={{cursor:'pointer'}}
+                    className={` font-weight-bold ${this.state.activeTab === "13" ? "active" : ""}`}
+                    onClick={() => {
+                      this.toggle("13");
+                    }}
+                  >
+                    Incomplete Jobs <Badge href="#" className="ml-1 rounded-circle" color="danger">{this.props.sellerIncompleteJobs.length}</Badge>
                   </NavLink>
                 </NavItem>
                 <NavItem>
@@ -608,10 +682,95 @@ class ProviderProfile extends Component {
               </Row>
             </TabPane>
             <TabPane className="text-center" tabId="2" id="following">
-              <h3 className="text-muted">Write your Enguiry Here</h3>
-              <Button className="btn-round" color="warning">
-                Submit
-              </Button>
+            <Table hover>
+                  <thead>
+                    <tr>
+
+                      <th>Date</th>
+                      <th>Time</th>
+                      <th>Cover Letter</th>
+                      <th>Status</th>
+                      <th>Actions</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {this.props.appointments.length != 0 ? this.props.appointments.filter(item=>item.providerId==this.state.providerId).map((items, index) => {
+                      return (
+                        <tr key={index}>
+                          <th scope="row">{items.appointmentDate}</th>
+                          <td>{items.appointmentTime}</td>
+                          <td>{items.coverLetter}</td>
+                          <td><Badge color={items.appointmentStatus=="pending"?"secondary":items.appointmentStatus=="approved"?"success":"danger"}>{items.appointmentStatus}</Badge></td>
+                          <td>
+                            <Button
+                            onClick={async ()=>{
+                              const obj={
+                                appointmentStatus:"approved",
+                                id:items._id
+                              }
+                              this.setState({
+                                requested:true
+                              })
+                              await this.props.UpdateAppointmentStatus(obj)
+                              this.setState({
+                                requested:false
+                              })
+                            }}
+                            
+                            disabled={items.appointmentStatus=="approved" || items.appointmentStatus=="rejected"} className="btn-round mr-2"  color="success">
+                               {this.state.requested ? (
+                          <Loader
+                            type="TailSpin"
+                            color="#fff"
+                            height={20}
+                            width={30}
+                          />
+                        ) : (
+                          "Approve"
+                        )}
+                            </Button>
+                            <Button
+                            onClick={async ()=>{
+                              const obj={
+                                appointmentStatus:"rejected",
+                                id:items._id,
+                                customerId:items.customerId
+                              }
+                              
+                              this.setState({
+                                requested:true
+                              })
+                              
+                              await this.props.UpdateAppointmentStatus(obj)
+                              this.setState({
+                                requested:false
+                              })
+                            }}
+                            disabled={items.appointmentStatus=="approved" || items.appointmentStatus=="rejected"}  className="btn-round"  color="danger">
+                               {this.state.requested ? (
+                          <Loader
+                            type="TailSpin"
+                            color="#fff"
+                            height={20}
+                            width={30}
+                          />
+                        ) : (
+                          "Reject"
+                        )}
+                            </Button>
+                          </td>
+                        </tr>
+                      )
+                    }) :< div className="mx-auto mt-5">
+                
+                    <p className="text-danger text-upercase font-italic font-weight-bold">No Appointments Found !</p>
+                    
+                    </div>
+                    }
+
+
+                  </tbody>
+                </Table>
             </TabPane>
             <TabPane className="text-center" tabId="3" id="following">
               <h3 className="text-muted">Write your Enguiry Here</h3>
@@ -619,11 +778,335 @@ class ProviderProfile extends Component {
                 Submit
               </Button>
             </TabPane>
+            <TabPane className="text-center" tabId="6" id="following">
+
+
+            
+
+         
+         
+            <Row>
+              <Col md={9} className="mx-auto">
+                {this.props.incomingRequests.length!=0?this.props.incomingRequests.map((items,index)=>{
+
+                  const date =moment(items.request.jobDate).format('DD-MM-YYYY')
+                  return(
+                    <Card key={index} className="text-left">
+                    <Row>
+                    <Col md={8} className="p-4" >
+                      <Label className="font-weight-bold">Description</Label>
+                      <p>{items.request.coverLetter}</p>
+     
+                      <Label className="font-weight-bold">Date</Label>
+                      <p>{date}</p>
+                      <Label className="font-weight-bold">Price</Label>
+                      <p>{items.request.amount} &nbsp;PKR</p>
+
+                      <Button onClick={ 
+                         async ()=>{
+                           const obj={
+                             _id:items.request._id
+                           }
+                         
+                          this.setState({
+                            requested:true
+                          })
+
+                          await this.props.AcceptJobRequest(obj)
+                          this.setState({
+                            requested:false
+                          })
+
+                        }
+                      } className="btn-round mt-3 mr-2" color="success">
+                      {this.state.requested ? (
+                          <Loader
+                            type="TailSpin"
+                            color="#fff"
+                            height={20}
+                            width={30}
+                          />
+                        ) : (
+                          "Accept"
+                        )}
+              </Button>
+              <Button onClick={ 
+                         async ()=>{
+                           const obj={
+                             _id:items.request._id
+                           }
+                         
+                          this.setState({
+                            requested:true
+                          })
+
+                          await this.props.RejectJobRequest(obj)
+                          this.setState({
+                            requested:false
+                          })
+
+                        }
+                      } className="btn-round mt-3" color="danger">
+              {this.state.requested ? (
+                          <Loader
+                            type="TailSpin"
+                            color="#fff"
+                            height={20}
+                            width={30}
+                          />
+                        ) : (
+                          "Reject"
+                        )}
+              </Button>
+                    </Col>
+                    <Col className="text-center" style={{borderLeft:'2px solid #F1EAE0'}} md={4} >
+                      <img className="rounded-circle" height="50" width="50" src={items.buyer.avatar!=null?items.buyer.avatar:img}/>
+
+                      <h4>{items.buyer.fullName}</h4>
+                    </Col>
+                    </Row>
+                  </Card>
+                  )
+                }):< div className="mx-auto mt-5">
+                
+                <p className="text-danger text-upercase font-weight-bold font-italic">No Job Requests Found !</p>
+                
+                </div>}
+            
+             </Col>
+             </Row>
+            </TabPane>
+            <TabPane className="text-center" tabId="7" id="following">
+              <h3 className="text-muted">Write your Enguiry Here</h3>
+              <Button className="btn-round" color="warning">
+                Submit
+              </Button>
+            </TabPane>
+            <TabPane className="text-center" tabId="8" id="following">
+            <Row>
+              <Col md={9} className="mx-auto">
+                {this.props.sellerOngoingJobs.length!=0?this.props.sellerOngoingJobs.map((items,index)=>{
+
+                  const date =moment(items.request.jobDate).format('DD-MM-YYYY')
+                  return(
+                    <Card key={index} className="text-left">
+                    <Row>
+                    <Col md={8} className="p-4" >
+                      <Label className="font-weight-bold">Status</Label><br></br>
+                      <Badge color="primary">{items.request.status}</Badge><br></br>
+     
+                      <Label className="font-weight-bold">Date</Label>
+                      <p>{date}</p>
+                      <Label className="font-weight-bold">Price</Label>
+                      <p>{items.request.amount} &nbsp;PKR</p>
+
+                      <Button onClick={ 
+                         async ()=>{
+                           const obj={
+                             _id:items.request._id,
+                             status:"cancelled"
+                           }
+                         
+                          this.setState({
+                            requested:true
+                          })
+
+                          await this.props.ChangeJobStatus(obj)
+                          this.setState({
+                            requested:false
+                          })
+
+                        }
+                      } className="btn-round mt-3 mr-2" color="danger">
+              {this.state.requested ? (
+                          <Loader
+                            type="TailSpin"
+                            color="#fff"
+                            height={20}
+                            width={30}
+                          />
+                        ) : (
+                          "cancel"
+                        )}
+              </Button>
+              <Button onClick={ 
+                         async ()=>{
+                           const obj={
+                             _id:items.request._id,
+                             status:"request_complete"
+                           }
+                         
+                          this.setState({
+                            requested:true
+                          })
+
+                          await this.props.ChangeJobStatus(obj)
+                          this.setState({
+                            requested:false
+                          })
+
+                        }
+                      } className="btn-round mt-3" color="warning">
+              {this.state.requested ? (
+                          <Loader
+                            type="TailSpin"
+                            color="#fff"
+                            height={20}
+                            width={30}
+                          />
+                        ) : (
+                          " Request Complete"
+                        )}
+              </Button>
+                    </Col>
+                    <Col className="text-center" style={{borderLeft:'2px solid #F1EAE0'}} md={4} >
+                      <img className="rounded-circle" height="50" width="50" src={items.buyer.avatar!=null?items.buyer.avatar:img}/>
+
+                      <h4>{items.buyer.fullName}</h4>
+                    </Col>
+                    </Row>
+                  </Card>
+                  )
+                }):< div className="mx-auto mt-5">
+                
+                <p className="text-danger text-upercase font-weight-bold font-italic">No Ongoing Jobs  Found !</p>
+                
+                </div>}
+            
+             </Col>
+             </Row>
+                
+            </TabPane>
+            <TabPane className="text-center" tabId="9" id="following">
+            <Row>
+              <Col md={9} className="mx-auto">
+                {this.props.sellerRequestCompleteJobs.length!=0?this.props.sellerRequestCompleteJobs.map((items,index)=>{
+
+                  const date =moment(items.request.jobDate).format('DD-MM-YYYY')
+                  return(
+                    <Card key={index} className="text-left">
+                    <Row>
+                    <Col md={8} className="p-4" >
+                      <Label className="font-weight-bold">Status</Label><br></br>
+                      <Badge color="primary">{items.request.status}</Badge><br></br>
+     
+                      <Label className="font-weight-bold">Date</Label>
+                      <p>{date}</p>
+                      <Label className="font-weight-bold">Price</Label>
+                      <p>{items.request.amount} &nbsp;PKR</p>
+
+                     
+              
+                    </Col>
+                    <Col className="text-center" style={{borderLeft:'2px solid #F1EAE0'}} md={4} >
+                      <img className="rounded-circle" height="50" width="50" src={items.buyer.avatar!=null?items.buyer.avatar:img}/>
+
+                      <h4>{items.buyer.fullName}</h4>
+                    </Col>
+                    </Row>
+                  </Card>
+                  )
+                }):< div className="mx-auto mt-5">
+                
+                <p className="text-danger text-upercase font-weight-bold font-italic">No  Complete Job Requests  Found !</p>
+                
+                </div>}
+            
+             </Col>
+             </Row>
+                
+            </TabPane>
+            <TabPane className="text-center" tabId="10" id="following">
+              <h3 className="text-muted">Write your Enguiry Here</h3>
+              <Button className="btn-round" color="warning">
+                Submit
+              </Button>
+            </TabPane>
+            <TabPane className="text-center" tabId="11" id="following">
+              <h3 className="text-muted">Write your Enguiry Here</h3>
+              <Button className="btn-round" color="warning">
+                Submit
+              </Button>
+            </TabPane>
+            <TabPane className="text-center" tabId="12" id="following">
+            <Row>
+              <Col md={9} className="mx-auto">
+                {this.props.sellerCompletedJobs.length!=0?this.props.sellerCompletedJobs.map((items,index)=>{
+
+                  const date =moment(items.request.jobDate).format('DD-MM-YYYY')
+                  return(
+                    <Card key={index} className="text-left">
+                    <Row>
+                    <Col md={8} className="p-4" >
+                      <Label className="font-weight-bold">Status</Label><br></br>
+                      <Badge color="primary">{items.request.status}</Badge><br></br>
+     
+                      <Label className="font-weight-bold">Date</Label>
+                      <p>{date}</p>
+                      <Label className="font-weight-bold">Price</Label>
+                      <p>{items.request.amount} &nbsp;PKR</p>
+
+                      
+                    </Col>
+                    <Col className="text-center" style={{borderLeft:'2px solid #F1EAE0'}} md={4} >
+                      <img className="rounded-circle" height="50" width="50" src={items.buyer.avatar!=null?items.buyer.avatar:img}/>
+
+                      <h4>{items.buyer.fullName}</h4>
+                    </Col>
+                    </Row>
+                  </Card>
+                  )
+                }):< div className="mx-auto mt-5">
+                
+                <p className="text-danger text-upercase font-weight-bold font-italic">No Completed Jobs  Found !</p>
+                
+                </div>}
+            
+             </Col>
+             </Row>
+            </TabPane>
             <TabPane className="text-center" tabId="4" id="following">
               <h3 className="text-muted">Write your Enguiry Here</h3>
               <Button className="btn-round" color="warning">
                 Submit
               </Button>
+            </TabPane>
+            <TabPane className="text-center" tabId="13" id="following">
+            <Row>
+              <Col md={9} className="mx-auto">
+                {this.props.sellerIncompleteJobs.length!=0?this.props.sellerIncompleteJobs.map((items,index)=>{
+
+                  const date =moment(items.request.jobDate).format('DD-MM-YYYY')
+                  return(
+                    <Card key={index} className="text-left">
+                    <Row>
+                    <Col md={8} className="p-4" >
+                      <Label className="font-weight-bold">Status</Label><br></br>
+                      <Badge color="primary">{items.request.status}</Badge><br></br>
+     
+                      <Label className="font-weight-bold">Date</Label>
+                      <p>{date}</p>
+                      <Label className="font-weight-bold">Price</Label>
+                      <p>{items.request.amount} &nbsp;PKR</p>
+
+                      
+                    </Col>
+                    <Col className="text-center" style={{borderLeft:'2px solid #F1EAE0'}} md={4} >
+                      <img className="rounded-circle" height="50" width="50" src={items.buyer.avatar!=null?items.buyer.avatar:img}/>
+
+                      <h4>{items.buyer.fullName}</h4>
+                    </Col>
+                    </Row>
+                  </Card>
+                  )
+                }):< div className="mx-auto mt-5">
+                
+                <p className="text-danger text-upercase font-weight-bold font-italic">No Canceled Jobs  Found !</p>
+                
+                </div>}
+            
+             </Col>
+             </Row>
             </TabPane>
             <TabPane className="text-center" tabId="5" id="following">
              
@@ -708,7 +1191,16 @@ class ProviderProfile extends Component {
                     <option value="repairing&maintenance">Repairing&Maintenance</option>
                   </Input>
                   <Input className="mt-3" name="experience" value={this.state.experience} onChange={this.handleChange}  placeholder="Experience" type="text" required/>
-                  <Input className="mt-3" name="city" value={this.state.city} onChange={this.handleChange}  placeholder="City" type="text" required/>
+                  <Input   className="mt-3"  type="select" name="city"  onChange={this.handleChange}  required>
+                  <option value=""  disabled selected>Select City</option>
+                  <option value="sialkot" >Sialkot</option>
+                  <option value="gujrat">Gujrat</option>
+                  <option value="lahore">Lahore</option>
+                  <option value="gujranwala">Gujranwala</option>
+                 
+                  
+         
+                  </Input>
                   <Input className="mt-3" name="availableTimeStart" value={this.state.availableTimeStart} onChange={this.handleChange}  placeholder="Available Time Start" type="text" required/>
                   <Input className="mt-3" name="availableTimeEnd" value={this.state.availableTimeEnd} onChange={this.handleChange}  placeholder="Available Time End" type="text" required/>
                  <Alerts className="mt-3 mb-3"/>
@@ -748,7 +1240,13 @@ const  mapStateToProps = (state) => ({
   auth:state.auth,
   profile: state.profile.profile,
   avatar:state.profile.avatar,
-  services:state.service.services
+  services:state.service.services,
+  appointments: state.appointment.appointments,
+  incomingRequests:state.jobs.incomingRequests,
+  sellerOngoingJobs:state.jobs.sellerOngoingJobs,
+  sellerRequestCompleteJobs:state.jobs.sellerRequestCompleteJobs,
+  sellerCompletedJobs:state.jobs.sellerCompletedJobs,
+  sellerIncompleteJobs:state.jobs.sellerIncompleteJobs,
 
 });
 export default connect(mapStateToProps,
@@ -757,5 +1255,16 @@ export default connect(mapStateToProps,
   uploadProfile,AddServices,
   UpdateServices,
   DeleteServices,
-  FetchServices}
+  FetchServices,
+  FetchAppointments,
+  UpdateAppointmentStatus,
+  FetchIncomingJobRequests,
+  AcceptJobRequest,
+  RejectJobRequest,
+  FetchOngoingJobsAsSeller,
+  ChangeJobStatus,
+  FetchRequestCompleteJobAsSeller,
+  FetchCompletedJobAsSeller,
+  FetchIncompletedJobAsSeller
+  }
   )( ProviderProfile);

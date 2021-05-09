@@ -15,7 +15,7 @@ var profileRepository=RepositoryFactory.get("profiles")
 
 export const updateProfile = (user)=> async dispatch => {
    
-    console.log("object",user)
+    
                    
                       
                     try {

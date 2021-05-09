@@ -7,7 +7,7 @@ import { connect } from "react-redux";
 import Alerts from '../../components/alerts/Alerts'
 
 
-export default class postRequirement extends Component {
+class postRequirement extends Component {
     constructor(props){
         super(props);
         this.state={
@@ -15,6 +15,7 @@ export default class postRequirement extends Component {
             description:"",
             title:"",
             budget:"",
+            city:"",
             numOfDays:''
         }
     }
@@ -88,7 +89,16 @@ export default class postRequirement extends Component {
                     <option value="repairing&maintenance">Repairing&Maintenance</option>
                   </Input>
                   <Input className="mt-3" name="title" value={this.state.title} onChange={this.handleChange}  placeholder="Job Title" type="text" required/>
-                  <Input className="mt-3" name="city" value={this.state.city} onChange={this.handleChange}  placeholder="City" type="text" required/>
+                  <Input   className="mt-3"  type="select" name="city"  onChange={this.handleChange}  required>
+                  <option value=""  disabled selected>Select City</option>
+                  <option value="sialkot" >Sialkot</option>
+                  <option value="gujrat">Gujrat</option>
+                  <option value="lahore">Lahore</option>
+                  <option value="gujranwala">Gujranwala</option>
+                 
+                  
+         
+                  </Input>
                   <Input className="mt-3" name="description" value={this.state.description} onChange={this.handleChange}  placeholder="Description" type="textarea" required/>
                   <Input className="mt-3" name="numOfDays" value={this.state.availableTimeEnd} onChange={this.handleChange}  placeholder="Number of Days" type="text" required/>
                  <Alerts className="mt-3 mb-3"/>
@@ -118,3 +128,12 @@ export default class postRequirement extends Component {
         )
     }
 }
+
+const mapStateToProps = (state) => ({
+  auth: state.auth,
+  profile:state.profile.profile,
+  notifications:state.notification.notifications
+
+});
+
+export default connect(mapStateToProps,{})( postRequirement)

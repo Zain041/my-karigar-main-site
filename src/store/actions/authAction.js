@@ -18,7 +18,7 @@ export const register = (user)=> async dispatch => {
                       
                     try {
                        let {data}=  await authRepository.register(user)
-                           console.log(data);
+                          
                             dispatch({
                                 type: REGISTER_SUCCESS,
                               });
@@ -50,7 +50,7 @@ export const LogIn = (user)=> async dispatch => {
                       
     try {
        let {data}=  await authRepository.logIn(user)
-           console.log(data);
+          
            Repository.defaults.headers['x-auth-token'] = data.token;
             dispatch({
                

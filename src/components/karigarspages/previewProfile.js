@@ -6,6 +6,7 @@ import { withStyles } from "@material-ui/core/styles";
 import { MuiPickersUtilsProvider } from '@material-ui/pickers';
 import DateFnsUtils from '@date-io/date-fns';
 import { KeyboardDatePicker ,KeyboardTimePicker} from "@material-ui/pickers";
+import moment from 'moment'
 import {
   Button,
   Label,
@@ -35,6 +36,8 @@ import { connect } from "react-redux";
 import { FetchProviders } from '../../store/actions/profileActions'
 import { AddServices, FetchServices, UpdateServices, DeleteServices } from '../../store/actions/servicesActions'
 import Alerts from "../../components/alerts/Alerts"
+import {AddAppointment} from '../../store/actions/appointmentActions'
+import {AddJobRequest} from '../..//store/actions/jobActions'
 import { compose } from "redux";
 
 
@@ -66,8 +69,16 @@ class PreviewProfile extends Component {
     super(props);
     this.state = {
       coverLetter:'',
+      jobCoverLetter:'',
+      amount:null,
+      requested:false,
+      providerId:'',
+      appointmentDateString:"",
+      appointmentTimeString:"",
+      jobDateString:"",
       date:Date.now(),
       time:Date.now(),
+      jobDate:Date.now(),
       activeTab: "1",
       email: "",
       modal: false,
@@ -105,14 +116,22 @@ class PreviewProfile extends Component {
   }
   handleDateChange= (date) => {
     this.setState({
-      date:date
+      date:date,
+      time:date,
+      jobDate:date,
+     
+      appointmentDateString:  moment(date).format('DD-MM-YYYY'),
+      appointmentTimeString:  moment(date).format('dd:hh:mm'),
+      jobDateString:moment(date).format('YYYY-MM-DD'),
     })
   }
 
 
   componentDidMount = async () => {
-    var id = this.props.match.params.id
+    let id = this.props.match.params.id
     console.log(id)
+
+    
 
 
 
@@ -158,8 +177,46 @@ class PreviewProfile extends Component {
     };
   };
 
-  handleSubmit = (e) => {
+  handleAppointment = async  (e) => {
+    e.preventDefault();
+    const obj={
+      appointmentDate:this.state.appointmentDateString,
+      appointmentTime:this.state.appointmentTimeString,
+      coverLetter:this.state.coverLetter,
+      providerId:this.props.match.params.id
+    }
+    this.setState({
+      requested:true
+    })
 
+    await this.props.AddAppointment(obj)
+    this.setState({
+      requested:false,
+      coverLetter:''
+    })
+
+
+  }
+  handleJobRequest= async (e)=>{
+    e.preventDefault()
+
+    const obj ={
+      sellerId:this.props.match.params.id,
+      amount:this.state.amount,
+      coverLetter:this .state.jobCoverLetter,
+      jobDate:this.state.jobDateString
+    }
+    this.setState({
+      requested:true
+    })
+    await this.props.AddJobRequest(obj)
+    this.setState({
+      requested:false,
+      sellerId:'',
+      amount:'',
+      coverLetter:'',
+      jobDate:this.state.jobDateString
+    })
   }
   render() {
     // if(this.props.auth.isAuthenticated){
@@ -247,7 +304,18 @@ class PreviewProfile extends Component {
                         this.toggle("3");
                       }}
                     >
-                      Request for Location
+                      View Location
+                  </NavLink>
+                  </NavItem>
+                  <NavItem>
+                    <NavLink
+                      style={{ cursor: 'pointer' }}
+                      className={` font-weight-bold ${this.state.activeTab === "4" ? "active" : ""}`}
+                      onClick={() => {
+                        this.toggle("4");
+                      }}
+                    >
+                      Send Job Request
                   </NavLink>
                   </NavItem>
 
@@ -299,7 +367,7 @@ class PreviewProfile extends Component {
                 <Col className="mx-auto" md={8}>
 
                
-               <Form>
+               <Form onSubmit={this.handleAppointment}>
                  <Label className="font-weight-bold">Appointment Details </Label>
                  
                  <MuiPickersUtilsProvider utils={DateFnsUtils}>
@@ -317,6 +385,7 @@ class PreviewProfile extends Component {
        KeyboardButtonProps = {{
          'aria-label': 'change date',
        }}
+       required
      />
 </MuiPickersUtilsProvider>
 <MuiPickersUtilsProvider className="mt-3" utils={DateFnsUtils}>
@@ -331,13 +400,26 @@ class PreviewProfile extends Component {
        KeyboardButtonProps = {{
          'aria-label': 'change time',
        }}
+       required
      />
 </MuiPickersUtilsProvider>
   
                  <Label className="font-weight-bold ">Cover Letter</Label>
-                 <Input  type="textarea" rows="6" name="coverLetter"/>
-               <Button className="btn-round mt-3" color="warning">
-                  Submit
+                 <Input  type="textarea" rows="6" value={this.state.coverLetter} onChange={this.handleChange} name="coverLetter"required/>
+
+                 <Alerts/>
+              
+               <Button className="btn-round mt-3" type="submit" color="warning">
+               {this.state.requested ? (
+                          <Loader
+                            type="TailSpin"
+                            color="#fff"
+                            height={20}
+                            width={30}
+                          />
+                        ) : (
+                          "Submit"
+                        )}
               </Button>
                </Form>
                </Col>
@@ -347,6 +429,56 @@ class PreviewProfile extends Component {
                 <Button className="btn-round" color="warning">
                   Submit
               </Button>
+              </TabPane>
+              <TabPane className="text-center" tabId="4" id="following">
+              <Col className="mx-auto" md={8}>
+
+               
+<Form onSubmit={this.handleJobRequest}>
+  <Label className="font-weight-bold">Job Request Details </Label>
+  
+  <MuiPickersUtilsProvider utils={DateFnsUtils}>
+<KeyboardDatePicker
+
+fullWidth
+
+format="MM/dd/yyyy"
+margin="normal"
+id="date-picker-inline"
+label="Select Date"
+value={this.state.jobDate}
+varient="dialog"
+onChange={this.handleDateChange}
+KeyboardButtonProps = {{
+'aria-label': 'change date',
+}}
+required
+/>
+</MuiPickersUtilsProvider>
+
+
+<Label className="font-weight-bold ">Amount</Label>
+  <Input  type="number" min="0"  value={this.state.amount} onChange={this.handleChange} name="amount"required/>
+
+  <Label className="font-weight-bold ">Cover Letter</Label>
+  <Input  type="textarea" rows="6" value={this.state.jobCoverLetter} onChange={this.handleChange} name="jobCoverLetter"required/>
+
+  <Alerts/>
+
+<Button className="btn-round mt-3" type="submit" color="warning">
+{this.state.requested ? (
+           <Loader
+             type="TailSpin"
+             color="#fff"
+             height={20}
+             width={30}
+           />
+         ) : (
+           "Submit"
+         )}
+</Button>
+</Form>
+</Col>
               </TabPane>
 
 
@@ -365,4 +497,4 @@ const mapStateToProps = (state) => ({
   services: state.service.services
 
 });
-export default compose(  connect(mapStateToProps, { FetchProviders, FetchServices }),withStyles(styles, { withTheme: true }))(PreviewProfile);
+export default compose(  connect(mapStateToProps, { FetchProviders,AddJobRequest, FetchServices,AddAppointment }),withStyles(styles, { withTheme: true }))(PreviewProfile);

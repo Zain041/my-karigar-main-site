@@ -26,6 +26,7 @@ import GrayLogo from '../../assets/img/gray.png';
 import BlackLogo from '../../assets/img/logo-black.png';
 
 import {logout} from '../../store/actions/authAction'
+import {FetchNotifications,ClearNotifications} from '../../store/actions/notificationActions'
 import img from '../../assets/img/default-avatar.png'
 import './navbar.css'
 
@@ -33,6 +34,8 @@ import './navbar.css'
 import {
   Collapse,
   NavbarBrand,
+  Card,
+  Badge,
   Navbar,
   NavItem,
   NavLink,
@@ -42,7 +45,8 @@ import {
   DropdownItem,
   DropdownToggle,
   DropdownMenu,
-  Button
+  Button,
+  DropdownContext
 } from "reactstrap";
 import { connect } from "react-redux";
 import Loader from "react-loader-spinner";
@@ -59,7 +63,8 @@ class  NavBar extends Component {
       Graylogo:false,
       requested:false,
       link:"",
-      avatar:null
+      avatar:null,
+      iconColor:'',
      
 
 
@@ -83,7 +88,8 @@ class  NavBar extends Component {
     ) {
       this.setState({
         navbarColor:"",
-        Graylogo:true
+        Graylogo:true,
+        iconColor:'text-secondary'
       
       })
      
@@ -93,7 +99,8 @@ class  NavBar extends Component {
     ) {
       this.setState({
         navbarColor:"navbar-transparent",
-        Graylogo:false
+        Graylogo:false,
+        iconColor:'text-white'
        
        
 
@@ -106,6 +113,7 @@ class  NavBar extends Component {
 componentDidMount=() => {
   setInterval(() => {
     var profile=JSON.parse(localStorage.getItem('profile'))
+    
  
 
   this.setState({
@@ -113,6 +121,7 @@ componentDidMount=() => {
     avatar:profile!=null?profile.avatar:""
   })
   }, 3000);
+  this.props.FetchNotifications()
   
   
    
@@ -124,7 +133,7 @@ componentDidMount=() => {
     };
   };
   render(){ 
-  console.log(this.state.avatar)
+ 
    
     const { history } = this.props;
   return (
@@ -262,6 +271,35 @@ componentDidMount=() => {
             </NavLink>
   }
             </NavItem>
+            <NavLink
+                
+              
+                
+                
+              >
+              <UncontrolledDropdown nav inNavbar>
+              <DropdownToggle nav caret>
+              <i style={{fontSize:'25px',marginTop:'-25px'}} class={`fas ${this.state.iconColor} fa-bell`}></i><Badge style={{marginLeft:'-20px',marginTop:'-15px',marginRight:'10px',position:'absolute'}}  className=" rounded-circle" color="danger">{this.props.notifications.length}</Badge>
+              </DropdownToggle>
+              <DropdownMenu style={{minWidth:'350px'}} right>
+                {this.props.notifications.length!=0?this.props.notifications.map((items,index)=>{
+                  return(
+                    <Card className="m-2 "><p style={{fontWeight:'400'}} className=" text-secondary p-2 w-100"><small>{items.type}</small><br></br>{items.message}</p> <small style={{cursor:'pointer'}} onClick={()=>{
+                      this.props.ClearNotifications()
+                    }} className="pl-4 pb-2 text-danger">clear</small></Card>
+                  )
+                }):<>
+                <Card className="m-2 ">
+                  <p style={{fontWeight:'400'}} className=" text-danger p-2 w-100">Notifications Not Found</p>
+                </Card>
+                
+                </>}
+               
+              
+              </DropdownMenu>
+            </UncontrolledDropdown>
+               
+              </NavLink>
            
             <NavItem>
               
@@ -316,8 +354,9 @@ componentDidMount=() => {
 }
 const mapStateToProps = (state) => ({
   auth: state.auth,
-  profile:state.profile.profile
+  profile:state.profile.profile,
+  notifications:state.notification.notifications
 
 });
 
-export default withRouter (connect(mapStateToProps,{logout})( NavBar));
+export default withRouter (connect(mapStateToProps,{logout,FetchNotifications,ClearNotifications})( NavBar));

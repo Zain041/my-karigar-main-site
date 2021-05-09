@@ -16,7 +16,7 @@
 * The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.
 
 */
-import React from "react";
+import React, { Component } from "react";
 
 // reactstrap components
 import {
@@ -42,14 +42,26 @@ import IndexHeader from "components/Headers/IndexHeader.js";
 import DemoFooter from "components/Footers/DemoFooter.js";
 import { Link } from "react-router-dom";
 
-function LandingPage() {
-  document.documentElement.classList.remove("nav-open");
-  React.useEffect(() => {
-    document.body.classList.add("profile-page");
-    return function cleanup() {
-      document.body.classList.remove("profile-page");
-    };
-  });
+class LandingPage extends Component {
+  constructor(props) {
+    super(props);
+    this.stae={
+      category:"",
+      city:""
+    }
+  }
+  
+  // document.documentElement.classList.remove("nav-open");
+  // React.useEffect(() => {
+  //   document.body.classList.add("profile-page");
+  //   return function cleanup() {
+  //     document.body.classList.remove("profile-page");
+  //   };
+  // });
+
+  render(){
+
+ 
   return (
     <>
       <NavBar />
@@ -61,13 +73,34 @@ function LandingPage() {
             <Col sm={{size:'3',offset:'1'}}>
               
               <FormGroup>
-                <Input   placeholder="Enter Karigar Type" type="text" />
+                
+                <Input   type="select" name="category"  onChange={this.handleChange}  required>
+                  <option value=""  disabled selected>Select Category</option>
+                  <option value="mason" >Mason</option>
+                  <option value="carpentor">Carpentor</option>
+                  <option value="fabricator">Fabricator</option>
+                  <option value="gardner">Gardner</option>
+                  <option value="repairing&maintenance">Repairing & Maintenance</option>
+                  <option value="plumber">Plumber</option>
+                  <option value="painter">Painter</option>
+                  <option value="electrician">Electrician</option>
+         
+                  </Input>
               </FormGroup>
             </Col>
             <Col sm="3">
               
               <FormGroup>
-              <Input   placeholder="Enter City" type="text" />
+              <Input   type="select" name="city"  onChange={this.handleChange}  required>
+                  <option value=""  disabled selected>Select City</option>
+                  <option value="sialkot" >Sialkot</option>
+                  <option value="gujrat">Gujrat</option>
+                  <option value="lahore">Lahore</option>
+                  <option value="gujranwala">Gujranwala</option>
+                 
+                  
+         
+                  </Input>
  
               </FormGroup>
             </Col>
@@ -470,6 +503,7 @@ function LandingPage() {
    
     </>
   );
+}
 }
 
 export default LandingPage;
