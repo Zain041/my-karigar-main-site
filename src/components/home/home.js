@@ -45,10 +45,15 @@ import { Link } from "react-router-dom";
 class LandingPage extends Component {
   constructor(props) {
     super(props);
-    this.stae={
-      category:"",
-      city:""
+    this.state={
+      category:null,
+      city:null
     }
+  }
+  handleChange=(e)=>{
+    this.setState({
+      [e.target.name]:e.target.value
+    })
   }
   
   // document.documentElement.classList.remove("nav-open");
@@ -61,7 +66,7 @@ class LandingPage extends Component {
 
   render(){
 
- 
+ const a='&';
   return (
     <>
       <NavBar />
@@ -103,11 +108,12 @@ class LandingPage extends Component {
                   </Input>
  
               </FormGroup>
+              {/* ${this.stae.category!=""?this.state.category:"demo"}${a}city=${this.stae.city!=""?this.state.city:"demo"} */}
             </Col>
             <Col className=" mr-auto pl-0 ml-0" sm="4">
-            <Button color="default"    type="button" className="ml-0">
+           <Link  to={`/user/search?category=${this.state.category}${a}city=${this.state.city}`}><Button color="default"    type="button" className="ml-0">
                   SEARCH
-                </Button>
+                </Button></Link> 
                 <Link to="/user/post-requirements">
                 <Button color="default"  type="button"   className="ml-4">
                   POST YOUR REQUIREMENT
@@ -115,6 +121,7 @@ class LandingPage extends Component {
                 </Link>
              
             </Col>
+           
             
             </Row>
             <Row>

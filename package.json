@@ -11,6 +11,7 @@
     "classnames": "2.2.6",
     "date-fns": "^2.21.1",
     "firebase": "^8.2.2",
+    "google-maps-react": "2.0.6",
     "mdbreact": "^5.0.2",
     "moment": "^2.29.1",
     "node-sass": "4.14.1",
@@ -29,6 +30,7 @@
     "redux-thunk": "^2.3.0"
   },
   "scripts": {
+    "deploy": "firebase deploy --only hosting:my-karigar",
     "start": "react-scripts start",
     "build": "react-scripts build && gulp licenses",
     "test": "react-scripts test",

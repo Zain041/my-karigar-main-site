@@ -1,5 +1,5 @@
 
-import { UPDATE_PROFILE_FAIL,UPDATE_PROFILE_SUCCESS,FETCH_PROVIDERS,FETCH_PROFILE,UPLOAD_PROFILE_FAIL,UPLOAD_PROFILE_SUCCESS} from './types';
+import { UPDATE_PROFILE_FAIL,UPDATE_PROFILE_SUCCESS,FETCH_SEARCHED_PROVIDERS,FETCH_PROVIDERS,FETCH_PROFILE,UPLOAD_PROFILE_FAIL,UPLOAD_PROFILE_SUCCESS} from './types';
 import { setAlert } from './alertActions'
 import axios from 'axios';
 
@@ -118,6 +118,35 @@ export const FetchProviders = ()=> async dispatch => {
           
             dispatch({
                 type: FETCH_PROVIDERS,
+                payload:data
+              });
+             
+              
+       
+             
+        
+    }catch (error) {
+       
+          dispatch(setAlert(error.message, "danger"));
+    }
+
+
+
+
+}
+export const SearchProviders = (obj)=> async dispatch => {
+    console.log("in action",obj)
+   
+                   
+                      
+    try {
+       let {data}=  await profileRepository.SearchProviders(obj)
+       console.log("dataaaaa",data)
+      
+          
+          
+            dispatch({
+                type: FETCH_SEARCHED_PROVIDERS,
                 payload:data
               });
              

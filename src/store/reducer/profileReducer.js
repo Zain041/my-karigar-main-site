@@ -1,11 +1,12 @@
-import { UPDATE_PROFILE_FAIL,UPDATE_PROFILE_SUCCESS,FETCH_PROVIDERS,FETCH_PROFILE,UPLOAD_PROFILE_FAIL,UPLOAD_PROFILE_SUCCESS} from '../actions/types';
+import { UPDATE_PROFILE_FAIL,UPDATE_PROFILE_SUCCESS,FETCH_SEARCHED_PROVIDERS,FETCH_PROVIDERS,FETCH_PROFILE,UPLOAD_PROFILE_FAIL,UPLOAD_PROFILE_SUCCESS} from '../actions/types';
 
 
 const initialState = {
    
     profile:[],
     avatar:"",
-    providers:[]
+    providers:[],
+    searchResults:[]
    
   
 }
@@ -20,7 +21,14 @@ export default function profileReducer (state = initialState, action) {
                 ...state,
                 
             }
-            case FETCH_PROFILE:
+            case FETCH_SEARCHED_PROVIDERS:
+                
+                return {
+                    ...state,
+                   
+                    searchResults: action.payload
+                }
+                case FETCH_PROFILE:
                 
                 return {
                     ...state,

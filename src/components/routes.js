@@ -17,6 +17,10 @@ import Maintenance from './karigarspages/maintenance';
 import Gardner from './karigarspages/gardner';
 import Electrician from './karigarspages/electrician';
 import PreviewProfile from './karigarspages/previewProfile';
+import Privacy from './privacy';
+import { SearchTwoTone, TextFormatSharp } from '@material-ui/icons';
+import Terms from './terms';
+import search from './search/search';
 
 
 var routes = [
@@ -132,12 +136,33 @@ var routes = [
     component: Gardner,
     layout: "/user"
   },
+  {
+    path: "/search",
+   
+    icon: "fa fa-list-alt",
+    component: search,
+    layout: "/user"
+  },
 
   {
     path: "/login",
     name: "Login",
     // icon: "ni ni-key-25 text-info",
     component: Login,
+    layout: "/auth"
+  },
+  {
+    path: "/privacy-policy",
+    name: "Login",
+    // icon: "ni ni-key-25 text-info",
+    component: Privacy,
+    layout: "/auth"
+  },
+  {
+    path: "/terms-of-use",
+    name: "Login",
+    // icon: "ni ni-key-25 text-info",
+    component:Terms,
     layout: "/auth"
   },
   {
