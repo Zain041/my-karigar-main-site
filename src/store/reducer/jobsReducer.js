@@ -1,4 +1,4 @@
-import { FETCH_OUTGOING_JOBREQUESTS,FETCH_REQUESTCOMPLETE_JOBS_BUYER,FETCH_REQUESTCOMPLETE_JOBS_SELLER,FETCH_INCOMPLETED_JOBS_SELLER,FETCH_INCOMPLETED_JOBS_BUYER,FETCH_COMPLETED_JOBS_BUYER,FETCH_COMPLETED_JOBS_SELLER,FETCH_INCOMING_JOBREQUESTS,FETCH_ONGOING_JOBS_SELLER,FETCH_ONGOING_JOBS_BUYER} from '../actions/types';
+import { FETCH_OUTGOING_JOBREQUESTS,FETCH_REQUESTCOMPLETE_JOBS_BUYER,FETCH_JOBOFFER,FETCH_JOBS,FETCH_REQUESTCOMPLETE_JOBS_SELLER,FETCH_INCOMPLETED_JOBS_SELLER,FETCH_INCOMPLETED_JOBS_BUYER,FETCH_COMPLETED_JOBS_BUYER,FETCH_COMPLETED_JOBS_SELLER,FETCH_INCOMING_JOBREQUESTS,FETCH_ONGOING_JOBS_SELLER,FETCH_ONGOING_JOBS_BUYER} from '../actions/types';
 
 const initialState = {
    
@@ -12,6 +12,8 @@ const initialState = {
    buyerCompletedJobs:[],
    sellerIncompleteJobs:[],
    buyerIncompleteJobs:[],
+   jobs:[],
+   buyerOffers:[]
   
 }
 
@@ -28,6 +30,15 @@ export default function jobsReducer (state = initialState, action) {
                 
             }
 
+            case FETCH_JOBOFFER:
+                console.log("inside reducer",payload)
+                return {
+                    ...state,
+                    buyerOffers:payload,
+                    
+                    
+                }
+
             case FETCH_OUTGOING_JOBREQUESTS:
             console.log("inside reducer",payload)
             return {
@@ -36,6 +47,14 @@ export default function jobsReducer (state = initialState, action) {
                 
                 
             }
+            case FETCH_JOBS:
+                console.log("inside reducer",payload)
+                return {
+                    ...state,
+                    jobs:payload,
+                    
+                    
+                }
             case FETCH_ONGOING_JOBS_BUYER:
             console.log("inside reducer",payload)
             return {

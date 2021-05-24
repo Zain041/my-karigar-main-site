@@ -4,7 +4,9 @@ const update_profile_resource ='/profiles/createOrUpdateProfile'
 const get_profile_resource='/profiles/getCurrentUserProfile'
 const upload_resource='/profiles/uploadPhoto'
 const get_providers_resource='/profiles/getProviders'
+const get_customers_resource='/profiles/getCustomers'
 const search_providers_resource='/profiles/searchProviders'
+const send_ratings_source='/profiles/sendRating'
 
 
 export default {
@@ -13,10 +15,19 @@ export default {
      
       return Repository.post(`${update_profile_resource}`, user)
   },
-
-  GetUserProfile(){
-      return Repository.post(`${get_profile_resource}`)
+  SendRatings(ratings){
+    console.log("repository",ratings);
+     
+      return Repository.post(`${send_ratings_source}`, ratings)
   },
+
+  
+  GetCustomers(){
+    return Repository.get(`${get_customers_resource}`)
+},
+GetUserProfile(){
+  return Repository.post(`${get_profile_resource}`)
+},
   SearchProviders(obj){
     console.log("in repsooooo",obj)
     const form = new  FormData()

@@ -6,6 +6,8 @@ import { connect } from "react-redux";
 
 import Alerts from '../../components/alerts/Alerts'
 
+import {AddJob} from '../../store/actions/jobActions'
+
 
 class postRequirement extends Component {
     constructor(props){
@@ -16,8 +18,40 @@ class postRequirement extends Component {
             title:"",
             budget:"",
             city:"",
-            numOfDays:''
+            numOfDays:'',
+            requested:false
         }
+    }
+
+    handleChange=(e)=>{
+      this.setState({
+        [e.target.name]:e.target.value
+      })
+    }
+
+    habdleSubmit= async (e)=>{
+      e.preventDefault()
+
+      var obj={
+        category:this.state.category,
+        description:this.state.description,
+        title:this.state.title,
+        budget:this.state.budget,
+        city:this.state.city,
+        numOfDays:this.state.numOfDays,
+      }
+      this.setState({
+        requested:true,
+        
+      })
+
+      await this.props.AddJob(obj)
+
+      this.setState({
+        requested:false,
+        
+
+      })
     }
     render() {
         return (
@@ -31,46 +65,7 @@ class postRequirement extends Component {
 
                 <Form className="p-3"
                 
-                // onSubmit={async (e)=>{
-                //    e.preventDefault();
-
-                //    console.log("inside submit")
-                  
-
-                //    this.setState({
-                //      inside:"helllooo",
-                     
-                //      requested:true
-                //    })
-               
-                //    var obj={
-                //      fullName:this.state.fullName,
-                //        phoneNumber:this.state.phoneNumber,
-                //        address:this.state.address,
-                //        city:this.state.city,
-                //        about:this.state.about,
-                      
-                //        category:this.state.category,
-                //        availableTimeStart:this.state.availableTimeStart,
-                //        availableTimeEnd:this.state.availableTimeEnd,
-                //        experience:this.state.experience
-                //    }
-                //     await this.props.updateProfile(obj)
-                  
-                //    this.setState({
-                //     requested:false,
-                //     fullName:"",
-                //     phoneNumber:"",
-                //     address:"",
-                //     city:"",
-                //     about:"",
-                   
-                //     category:"",
-                //     availableTimeStart:"",
-                //     availableTimeEnd:"",
-                //     experience:""
-                //    })
-                // }}
+                onSubmit={this.habdleSubmit}
                 >
 
                   
@@ -89,7 +84,7 @@ class postRequirement extends Component {
                     <option value="repairing&maintenance">Repairing&Maintenance</option>
                   </Input>
                   <Input className="mt-3" name="title" value={this.state.title} onChange={this.handleChange}  placeholder="Job Title" type="text" required/>
-                  <Input   className="mt-3"  type="select" name="city"  onChange={this.handleChange}  required>
+                  <Input   className="mt-3"  type="select" name="city" value={this.state.city}  onChange={this.handleChange}  required>
                   <option value=""  disabled selected>Select City</option>
                   <option value="sialkot" >Sialkot</option>
                   <option value="gujrat">Gujrat</option>
@@ -100,7 +95,8 @@ class postRequirement extends Component {
          
                   </Input>
                   <Input className="mt-3" name="description" value={this.state.description} onChange={this.handleChange}  placeholder="Description" type="textarea" required/>
-                  <Input className="mt-3" name="numOfDays" value={this.state.availableTimeEnd} onChange={this.handleChange}  placeholder="Number of Days" type="text" required/>
+                  <Input className="mt-3" name="numOfDays" value={this.state.numOfDays} onChange={this.handleChange}  placeholder="Number of Days" type="number" min="0" required/>
+                  <Input className="mt-3" name="budget" value={this.state.budget} onChange={this.handleChange}  placeholder="Budget" type="number" min="0" required/>
                  <Alerts className="mt-3 mb-3"/>
                  
                   <Button  type="submit" block className=" mt-3 btn-round" color="secondary">
@@ -136,4 +132,4 @@ const mapStateToProps = (state) => ({
 
 });
 
-export default connect(mapStateToProps,{})( postRequirement)
+export default connect(mapStateToProps,{AddJob})( postRequirement)

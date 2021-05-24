@@ -257,7 +257,7 @@ componentDidMount=() => {
                 
                 
               >
-                <img src={this.state.avatar!=null?this.state.avatar:img} className="nav-img" />
+                <img src={this.state.avatar!=null?this.state.avatar:require("assets/img/faces/kaci-baum-2.jpg")} className="nav-img" />
                 <div style={{marginTop:'-17px',marginLeft:'40px'}} className={`text-success`} > <i style={{fontSize:'8px'}}  class="fas fa-xs pr-2 fa-circle"></i></div>
               </NavLink>:
               <NavLink
@@ -266,7 +266,7 @@ componentDidMount=() => {
               
               
             >
-              <img src={this.state.avatar!=null?this.state.avatar:img} className="nav-img" />
+              <img src={this.state.avatar!=null?this.state.avatar:require("assets/img/faces/kaci-baum-2.jpg")} className="nav-img" />
               <div style={{marginTop:'-17px',marginLeft:'40px'}} className={`text-success`} > <i style={{fontSize:'8px'}}  class="fas pr-2 fa-xs fa-circle"></i></div>
             </NavLink>
   }

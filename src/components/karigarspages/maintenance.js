@@ -7,13 +7,27 @@ import Button from 'reactstrap/lib/Button'
 import '../../assets/css/mason.css'
 
 import ProfilePageHeader from '../Headers/ProfilePageHeader'
-import { Link } from 'react-router-dom'
+import { Link,Redirect } from 'react-router-dom'
 
  class Maintenance extends Component {
+    constructor(props) {
+        super(props);
+        this.state={
+            role:"",
+        }
+    }
      componentDidMount=()=>{
          this.props.FetchProviders()
+         const profile=JSON.parse(localStorage.getItem('profile'))
+
+         this.setState({
+             role:profile.role
+         })
      }
     render() {
+        if (this.state.role=="provider"){
+            return <Redirect to="/user/home"/>
+        }
         console.log(this.props.providers)
         const providers=this.props.providers.length!=0?this.props.providers.profiles.filter(item=>item.status=="accepted" && item.category=="repairing&maintenance"):""
         return (

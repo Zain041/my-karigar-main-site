@@ -260,7 +260,7 @@ class ProviderProfile extends Component {
     // }
     
  
-    
+    console.log(this.props.profile)
   return (
     <>
     {/* modal for change profile */}
@@ -434,7 +434,7 @@ class ProviderProfile extends Component {
                 height="150"
                 width="150"
                 className="img-circle img-no-padding img-responsive"
-                src={this.state.avatar!=""?this.state.avatar:require("assets/img/faces/kaci-baum-2.jpg")}
+                src={this.state.avatar!=null?this.state.avatar:require("assets/img/faces/kaci-baum-2.jpg")}
               />
                <div style={{marginTop:'-30px',marginLeft:'77px'}} className={`text-success`} > <i  class="fas pr-2 fa-circle"></i></div>
               <span onClick={this.modalToggle} class="text-socondary" style={{cursor:'pointer',fontWeight:'normal'}} >

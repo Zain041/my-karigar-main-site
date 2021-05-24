@@ -1,7 +1,7 @@
 
 import React, { Component } from "react";
 import { connect } from "react-redux";
-
+import GrayLogo from '../../assets/img/gray.png';
 // reactstrap components
 import {
   Button,
@@ -29,14 +29,14 @@ import {
 import Loader from "react-loader-spinner";
 import img from '../../assets/img/default-avatar.png'
 import Alerts from '../../components/alerts/Alerts'
-import { FetchOutgoingJobRequests, FetchOngoingJobsAsBuyer,FetchCompletedJobAsBuyer,FetchIncompletedJobAsBuyer, ChangeJobStatus, FetchRequestCompleteJobAsBuyer } from '../../store/actions/jobActions'
-
+import { FetchOutgoingJobRequests,FetchIncomingOffers,AcceptJobOffers,RejectJobOffer, FetchOngoingJobsAsBuyer,FetchCompletedJobAsBuyer,FetchIncompletedJobAsBuyer, ChangeJobStatus, FetchRequestCompleteJobAsBuyer } from '../../store/actions/jobActions'
+import StripeCheckout from "react-stripe-checkout";
 // core components
 import NavBar from "components/Navbars/Navbar.js";
 import ProfilePageHeader from "../../components/Headers/ProfilePageHeader";
 
 import { Redirect } from "react-router";
-import { fetchCurrentUserProfile, updateProfile, uploadProfile } from '../../store/actions/profileActions'
+import { fetchCurrentUserProfile, updateProfile,SendRatings, uploadProfile } from '../../store/actions/profileActions'
 import { FetchAppointments } from '../../store/actions/appointmentActions'
 
 import moment from 'moment'
@@ -46,22 +46,30 @@ class CustomerProfile extends Component {
     super(props);
     this.state = {
       activeTab: "1",
+      method:"",
       city: "",
       email: "",
       modal: false,
       password: "",
       requested: false,
+      requested2:false,
       fullName: "",
       phoneNumber: "",
       address: "",
       avatar: "",
+      ratingsmodal:false,
+      ratings:"",
+      feedback:"",
 
 
 
       profileFile: "",
       previewUrl: "",
       about: "",
-      id: ""
+      id: "",
+      _id:"",
+      status:"",
+      token:""
     }
   }
 
@@ -77,6 +85,11 @@ class CustomerProfile extends Component {
   modalToggle = () => {
     this.setState({
       modal: !this.state.modal,
+    });
+  };
+  ratingsToggle = () => {
+    this.setState({
+      ratingsmodal: !this.state.ratingsmodal,
     });
   };
 
@@ -132,10 +145,14 @@ class CustomerProfile extends Component {
 
     await this.props.FetchCompletedJobAsBuyer()
     await this.props.FetchIncompletedJobAsBuyer()
+    await this.props.FetchIncomingOffers()
     // }, 1000);
 
+    const token=localStorage.getItem('token')
 
-
+this.setState({
+  token:token
+})
 
 
 
@@ -167,6 +184,33 @@ class CustomerProfile extends Component {
       document.body.classList.remove("landing-page");
     };
   };
+
+  handleCompleteJob= async (e)=>{
+    e.preventDefault()
+const statusObj={
+  _id:this.state._id,
+  status:this.state.status
+}
+
+const ratingsObj={
+  receiver:this.state.id,
+  feedback:this.state.feedback,
+  rating:this.state.ratings
+}
+this.setState({
+  requested:true
+
+})
+if(this.state.ratings!="" && this.state.feedback!=""){ 
+
+await this.props.SendRatings(ratingsObj)
+  }
+
+  await this.props.ChangeJobStatus(statusObj)
+  this.setState({
+    requested:false
+  })
+}
   render() {
     console.log(this.props.appointments)
 
@@ -239,6 +283,70 @@ class CustomerProfile extends Component {
         </Modal>
 
         {/* end */}
+        {/* payments and ratings modal */}
+        <Modal isOpen={this.state.ratingsmodal} toggle={this.ratingsToggle}>
+          <ModalHeader toggle={this.modalToggle}>
+            <span className="text-warning">Finalize</span>
+          </ModalHeader>
+          <ModalBody>
+          <Form onSubmit={this.handleCompleteJob}>
+          <Col className="mx-auto" md={8}>
+
+               
+
+ 
+
+<Label className="font-weight-bold ">Ratings</Label>
+<Input type="select" name="ratings" onChange={this.handleChange} >
+                        <option value="" disabled selected>Select Rating</option>
+                        <option value="1" >1</option>
+                        <option value="2">2</option>
+                        <option value="3">3</option>
+                        <option value="4">4</option>
+                        <option value="5">5</option>
+
+
+
+                      </Input>
+  <Label className="font-weight-bold ">Feedback</Label>
+  <Input  className="mb-3" type="textarea" rows="6" value={this.state.feedback} onChange={this.handleChange} name="feedback"/>
+
+  <Alerts/>
+
+
+
+</Col>
+
+
+
+
+
+              <ModalFooter>
+                
+                <Button color="secondary" onClick={this.ratingsToggle}>
+                  cancel
+                      </Button>{" "}
+                <Button color="primary"
+                  type="submit"
+
+                // disabled={this.state.filesUrl.length<5}
+                >
+                  {this.state.requested ? (
+                    <Loader
+                      type="TailSpin"
+                      color="#fff"
+                      height={20}
+                      width={30}
+                    />
+                  ) : (
+                    "save"
+                  )}
+                </Button>
+              
+              </ModalFooter>
+              </Form>
+          </ModalBody>
+        </Modal>
         <ProfilePageHeader />
         <div className="section profile-content">
           <Container>
@@ -335,6 +443,17 @@ class CustomerProfile extends Component {
                   <NavItem>
                     <NavLink
                       style={{ cursor: 'pointer' }}
+                      className={` font-weight-bold ${this.state.activeTab === "20" ? "active" : ""}`}
+                      onClick={() => {
+                        this.toggle("20");
+                      }}
+                    >
+                      Job Offers<Badge className="ml-1 rounded-circle" color="success">{this.props.buyerOffers.length}</Badge>
+                    </NavLink>
+                  </NavItem>
+                  <NavItem>
+                    <NavLink
+                      style={{ cursor: 'pointer' }}
                       className={` font-weight-bold ${this.state.activeTab === "7" ? "active" : ""}`}
                       onClick={() => {
                         this.toggle("7");
@@ -394,6 +513,104 @@ class CustomerProfile extends Component {
 
                               <h4>{items.seller.fullName}</h4>
                             </Col>
+                          </Row>
+                        </Card>
+                      )
+                    }) : < div className="mx-auto mt-5">
+
+                      <p className="text-danger text-upercase font-weight-bold font-italic">No  Job Requests  Found !</p>
+
+                    </div>}
+
+                  </Col>
+                </Row>
+              </TabPane>
+              <TabPane className="text-center" tabId="20" id="following">
+                <Row>
+                  <Col md={9} className="mx-auto">
+                    {this.props.buyerOffers.length != 0 ? this.props.buyerOffers.map((items, index) => {
+
+                      const date = moment(items.request.jobDate).format('DD-MM-YYYY')
+                      return (
+                        <Card key={index} className="text-left">
+                          <Row>
+                            <Col md={8} className="p-4" >
+                              <Label className="font-weight-bold">Cover Letter</Label>
+                              <p>{items.request.coverLetter}</p>
+
+                              <Label className="font-weight-bold">Date</Label>
+                              <p>{date}</p>
+                              <Label className="font-weight-bold">Amount</Label>
+                              <p>{items.request.amount} &nbsp;PKR</p>
+                              <Button 
+                            onClick={ 
+                         async ()=>{
+                           const obj={
+                             _id:items.request._id,
+                            
+                           }
+                         
+                          this.setState({
+                            requested2:true
+                          })
+
+                          await this.props.RejectJobOffer(obj)
+                          this.setState({
+                            requested2:false
+                          })
+
+                        }
+                      } 
+                      className="btn-round mt-3 mr-2" color="danger">
+              {this.state.requested ? (
+                          <Loader
+                            type="TailSpin"
+                            color="#fff"
+                            height={20}
+                            width={30}
+                          />
+                        ) : (
+                          "Reject Offer"
+                        )}
+              </Button>
+              <Button
+               onClick={ 
+                         async ()=>{
+                           const obj={
+                             _id:items.request._id,
+                            
+                           }
+                         
+                          this.setState({
+                            requested:true
+                          })
+
+                          await this.props.AcceptJobOffers(obj)
+                          this.setState({
+                            requested:false
+                          })
+
+                        }
+                      }
+                       className="btn-round mt-3" color="warning">
+              {this.state.requested ? (
+                          <Loader
+                            type="TailSpin"
+                            color="#fff"
+                            height={20}
+                            width={30}
+                          />
+                        ) : (
+                          "Accept Offer"
+                        )}
+              </Button>
+                            </Col>
+                            <Col className="text-center" style={{ borderLeft: '2px solid #F1EAE0' }} md={4} >
+                              <img className="rounded-circle" height="50" width="50" src={items.seller.avatar != null ? items.seller.avatar : img} />
+
+                              <h4>{items.seller.fullName}</h4>
+                            </Col>
+                      
                           </Row>
                         </Card>
                       )
@@ -593,6 +810,7 @@ class CustomerProfile extends Component {
                     {this.props.buyerRequestCompleteJobs.length != 0 ? this.props.buyerRequestCompleteJobs.map((items, index) => {
 
                       const date = moment(items.request.jobDate).format('DD-MM-YYYY')
+                      const method=localStorage.getItem('method')
                       return (
                         <Card key={index} className="text-left">
                           <Row>
@@ -604,6 +822,16 @@ class CustomerProfile extends Component {
                               <p>{date}</p>
                               <Label className="font-weight-bold">Price</Label>
                               <p>{items.request.amount} &nbsp;PKR</p>
+
+                              <Input className="mb-3 mt-3" type="select" name="method" onChange={this.handleChange} required>
+                        <option value="" disabled selected>Select Payment Method</option>
+                        <option value="cashondelivery" >Cash On Delivery</option>
+                        <option value="paynow">Pay Now</option>
+                       
+
+
+
+                      </Input>
                               <Button onClick={
                                 async () => {
                                   const obj = {
@@ -633,21 +861,21 @@ class CustomerProfile extends Component {
                                   "Give Revision"
                                 )}
                               </Button>
-                              <Button onClick={
-                                async () => {
-                                  const obj = {
+                              
+                              <Button 
+                              disabled={this.state.method==""}
+                              
+                              onClick={
+                               () => {
+                                  this.setState(  {
                                     _id: items.request._id,
-                                    status: "completed"
-                                  }
-
-                                  this.setState({
-                                    requested: true
+                                    status: "completed",
+                                    id:items.request.sellerId
                                   })
 
-                                  await this.props.ChangeJobStatus(obj)
-                                  this.setState({
-                                    requested: false
-                                  })
+                                  this.ratingsToggle()
+
+                                 
 
                                 }
                               } className="btn-round mt-3" color="warning">
@@ -662,6 +890,20 @@ class CustomerProfile extends Component {
                                   " Mark Completed"
                                 )}
                               </Button>
+                              <div className="m-3">
+                              <StripeCheckout
+                             
+			label="Pay Now"
+			name="My Karigar"
+      disabled={this.state.method!="paynow"}
+		
+			image={GrayLogo}
+			description={`Your Toal bill is ${items.request.amount}`}
+			panelLabel="Pay Now"
+			token={this.state.token}
+			stripeKey="pk_test_51IrqDTFuBa5OIRk5qdMHNLHoSH3SaZY07gSuTvIqDl1J3KbELgLU5nJAPj7LfE4SqzpPt7PO0UxcB0NDL4g1C7r500UBxsi1Ct"
+		/>
+                 </div>           
 
 
                             </Col>
@@ -801,9 +1043,10 @@ const mapStateToProps = (state) => ({
   buyerOngoingJobs: state.jobs.buyerOngoingJobs,
   buyerRequestCompleteJobs: state.jobs.buyerRequestCompleteJobs,
   buyerIncompleteJobs:state.jobs.buyerIncompleteJobs,
-  buyerCompletedJobs:state.jobs.buyerCompletedJobs
+  buyerCompletedJobs:state.jobs.buyerCompletedJobs,
+  buyerOffers:state.jobs.buyerOffers
 
 
 });
-export default connect(mapStateToProps, { FetchCompletedJobAsBuyer,FetchIncompletedJobAsBuyer,FetchRequestCompleteJobAsBuyer, ChangeJobStatus, FetchOngoingJobsAsBuyer, updateProfile, fetchCurrentUserProfile, uploadProfile, FetchAppointments, FetchOutgoingJobRequests })(CustomerProfile);
+export default connect(mapStateToProps, {FetchIncomingOffers,SendRatings,AcceptJobOffers,RejectJobOffer, FetchCompletedJobAsBuyer,FetchIncompletedJobAsBuyer,FetchRequestCompleteJobAsBuyer, ChangeJobStatus, FetchOngoingJobsAsBuyer, updateProfile, fetchCurrentUserProfile, uploadProfile, FetchAppointments, FetchOutgoingJobRequests })(CustomerProfile);
 ;

@@ -18,7 +18,7 @@ export const register = (user)=> async dispatch => {
                       
                     try {
                        let {data}=  await authRepository.register(user)
-                          
+                          console.log(data)
                             dispatch({
                                 type: REGISTER_SUCCESS,
                               });
