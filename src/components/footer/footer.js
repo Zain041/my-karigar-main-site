@@ -63,7 +63,7 @@ import './footer.css';
 </div>
 <div className="credits text-center font-weight-bold ml-auto">
             <span className="copyright">
-              © {new Date().getFullYear()}, My Karigar{" "}
+              ©  My Karigar{" "}
               <i className="fa fa-heart heart" /> 
             </span>
           </div>

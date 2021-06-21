@@ -7,18 +7,24 @@ const get_providers_resource='/profiles/getProviders'
 const get_customers_resource='/profiles/getCustomers'
 const search_providers_resource='/profiles/searchProviders'
 const send_ratings_source='/profiles/sendRating'
+const get_ratings_source ='/profiles/getReviews'
 
 
 export default {
   UpdateProfile(user){
-    console.log("repository",user);
+ 
      
       return Repository.post(`${update_profile_resource}`, user)
   },
   SendRatings(ratings){
-    console.log("repository",ratings);
+
      
       return Repository.post(`${send_ratings_source}`, ratings)
+  },
+  GetRatings(obj){
+   
+     
+      return Repository.post(`${get_ratings_source}`,obj)
   },
 
   
@@ -29,7 +35,7 @@ GetUserProfile(){
   return Repository.post(`${get_profile_resource}`)
 },
   SearchProviders(obj){
-    console.log("in repsooooo",obj)
+  
     const form = new  FormData()
     
     return Repository.post(`${search_providers_resource}`,{city:obj.city,category:obj.category})

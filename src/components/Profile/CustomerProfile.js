@@ -60,6 +60,7 @@ class CustomerProfile extends Component {
       ratingsmodal:false,
       ratings:"",
       feedback:"",
+      service:"",
 
 
 
@@ -89,7 +90,7 @@ class CustomerProfile extends Component {
   };
   ratingsToggle = () => {
     this.setState({
-      ratingsmodal: !this.state.ratingsmodal,
+      ratingsmodal: !this.state.ratingsmodal
     });
   };
 
@@ -195,7 +196,8 @@ const statusObj={
 const ratingsObj={
   receiver:this.state.id,
   feedback:this.state.feedback,
-  rating:this.state.ratings
+  rating:this.state.ratings,
+  service:this.state.service,
 }
 this.setState({
   requested:true
@@ -210,13 +212,16 @@ await this.props.SendRatings(ratingsObj)
   this.setState({
     requested:false
   })
+  
 }
   render() {
     console.log(this.props.appointments)
 
     if (this.props.auth.isAuthenticated === false) {
       return <Redirect to="/auth/login" />
+      
     }
+    console.log("jobbbbb",this.props.buyerRequestCompleteJobs)
     // var profile= JSON.parse(localStorage.getItem('profile'))
     // if (this.props.auth.isAuthenticated && profile.role==="provider" ) {
     //   return <Redirect to="/user/provider-profile"/>
@@ -285,7 +290,7 @@ await this.props.SendRatings(ratingsObj)
         {/* end */}
         {/* payments and ratings modal */}
         <Modal isOpen={this.state.ratingsmodal} toggle={this.ratingsToggle}>
-          <ModalHeader toggle={this.modalToggle}>
+          <ModalHeader toggle={this.ratingsToggle}>
             <span className="text-warning">Finalize</span>
           </ModalHeader>
           <ModalBody>
@@ -822,6 +827,9 @@ await this.props.SendRatings(ratingsObj)
                               <p>{date}</p>
                               <Label className="font-weight-bold">Price</Label>
                               <p>{items.request.amount} &nbsp;PKR</p>
+                              <p>{items.request.jobTime} &nbsp;PM</p>
+                      <Label className="font-weight-bold">Service</Label>
+                      <p>{items.request.service}</p>
 
                               <Input className="mb-3 mt-3" type="select" name="method" onChange={this.handleChange} required>
                         <option value="" disabled selected>Select Payment Method</option>
@@ -870,7 +878,8 @@ await this.props.SendRatings(ratingsObj)
                                   this.setState(  {
                                     _id: items.request._id,
                                     status: "completed",
-                                    id:items.request.sellerId
+                                    id:items.request.sellerId,
+                                    service:items.request.service
                                   })
 
                                   this.ratingsToggle()

@@ -34,7 +34,9 @@ export const register = (user)=> async dispatch => {
                           if(error.message=="Request failed with status code 405"){
                             dispatch(setAlert("user alredy exists", "danger"));
                 
-                          }else{
+                          }else if(error.message=="Request failed with status code 400"){
+                            dispatch(setAlert("Email is Required", "danger"));
+                          }else {
                             dispatch(setAlert("Password must include one lowercase character, one uppercase character, a number, and a special character", "danger"));
                           }
                     }

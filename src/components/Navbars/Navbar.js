@@ -65,6 +65,7 @@ class  NavBar extends Component {
       link:"",
       avatar:null,
       iconColor:'',
+      role:"",
      
 
 
@@ -113,6 +114,9 @@ class  NavBar extends Component {
 componentDidMount=() => {
   setInterval(() => {
     var profile=JSON.parse(localStorage.getItem('profile'))
+   
+
+   
     
  
 
@@ -185,7 +189,7 @@ componentDidMount=() => {
               </NavLink>
             </NavItem>
             <UncontrolledDropdown nav inNavbar>
-              <DropdownToggle nav caret>
+              <DropdownToggle  disabled={this.state.role=="provider"}nav caret>
                 Karigar
               </DropdownToggle>
               <DropdownMenu right>

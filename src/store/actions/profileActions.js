@@ -1,5 +1,5 @@
 
-import { UPDATE_PROFILE_FAIL,UPDATE_PROFILE_SUCCESS,FETCH_CUSTOMERS,FETCH_SEARCHED_PROVIDERS,FETCH_PROVIDERS,FETCH_PROFILE,UPLOAD_PROFILE_FAIL,UPLOAD_PROFILE_SUCCESS} from './types';
+import { UPDATE_PROFILE_FAIL,UPDATE_PROFILE_SUCCESS,FETCH_CUSTOMERS,FETCH_REVIEWS,FETCH_SEARCHED_PROVIDERS,FETCH_PROVIDERS,FETCH_PROFILE,UPLOAD_PROFILE_FAIL,UPLOAD_PROFILE_SUCCESS} from './types';
 import { setAlert } from './alertActions'
 import axios from 'axios';
 
@@ -220,76 +220,33 @@ export const SearchProviders = (obj)=> async dispatch => {
 }
 
 
-// export const forgotPassword = (forgotEmail) => async dispatch => {
-//     console.log("inside fun")
-//     firebase.auth().sendPasswordResetEmail(forgotEmail)
-    
-//         .then(function () {
-//             console.log("inside then")
-            
-//             dispatch(setAlert('Reset password email sent', 'success'))
-//         })
-//         .catch(function (error) {
-//             console.log("inside catch")
-//             dispatch(setAlert(error.message, 'danger'))
-//         })
-// }
 
-
-
-// const  users = db.collection("users");
-// export const updateUser = (_uid) => async dispatch =>{
-	
-//         users.doc(_uid).get().then((doc=>{
-//             console.log('login updat')
-//              localStorage.setItem('user',JSON.stringify(doc.data()))
-           
-            
-//         }))
-	
-// }
-// const  listings = db.collection("listings");
-
-
-
-// export const fetchUsers = (obj) => async dispatch =>{
-    
-
-//     console.log(obj);
-			
-//     const data=[]
-//     const temp_listings=[]
-
-// users.where('state' , '==' ,obj.state,'service_industry','==',obj.service_industry,'region','==',obj.region)
-
-// .get()
-// .then(async (querySnapshot)=>{
-
-//     querySnapshot.forEach(doc=>{
-//         data.push({...doc.data(),id:doc.id});
-        
-        
-        
-//     })
-//     console.log("users",data);
-    
-//    await  data.forEach(item=>{
-//     listings.where("business_id","==",item.id).get()
-//             .then(querySnapshot=>{
-//                          querySnapshot.forEach(doc=>{
-//                            temp_listings.push({...doc.data(),id:doc.id})
-//                          })
-//          })
-//      })
-//      console.log("temp-listings",temp_listings)
-//     dispatch({
-//         type: FETCH_USERS,
-//         payload: temp_listings
-        
-//     })
-// })
+export const FetchRatings = (obj) => async dispatch => {
 
 
 
 
-// }
+    try {
+  
+  
+      let { data } = await profileRepository.GetRatings(obj)
+  
+      dispatch({
+        type: FETCH_REVIEWS,
+        payload: data
+      });
+  
+  
+  
+  
+  
+  
+    } catch (error) {
+  
+      dispatch(setAlert(error.message, "danger"));
+    }
+  
+  
+  
+  
+  }

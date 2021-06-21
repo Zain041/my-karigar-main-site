@@ -22,20 +22,16 @@ import {
   Row,
   Col,
   Form,
-  Card,
-  Modal,
-  ModalBody,
-  ModalFooter,
-  ModalHeader,
-  Badge
+  
+ 
 } from "reactstrap";
 import NavBar from "components/Navbars/Navbar.js";
 import ProfilePageHeader from "../../components/Headers/ProfilePageHeader";
 
 import Loader from "react-loader-spinner";
 import { connect } from "react-redux";
-import { FetchProviders } from '../../store/actions/profileActions'
-import { AddServices, FetchServices, UpdateServices, DeleteServices } from '../../store/actions/servicesActions'
+import { FetchProviders ,FetchRatings} from '../../store/actions/profileActions'
+import { FetchServices } from '../../store/actions/servicesActions'
 import Alerts from "../../components/alerts/Alerts"
 import { AddAppointment } from '../../store/actions/appointmentActions'
 import { AddJobRequest } from '../..//store/actions/jobActions'
@@ -284,6 +280,8 @@ class PreviewProfile extends Component {
       date: Date.now(),
       time: Date.now(),
       jobDate: Date.now(),
+      jobTime:Date.now(),
+      service:"",
       activeTab: "1",
       email: "",
       modal: false,
@@ -297,10 +295,13 @@ class PreviewProfile extends Component {
       availableTimeStart: "",
       availableTimeEnd: "",
       experience: "",
+      service:"",
       profileFile: "",
       previewUrl: "",
       about: "",
-      inside: "g jnb"
+      jobTimeString:"",
+      inside: "g jnb",
+      userId:""
     }
   }
 
@@ -319,22 +320,29 @@ class PreviewProfile extends Component {
       [e.target.name]: e.target.value
     })
   }
-  handleDateChange = (date) => {
-    this.setState({
+  handleDateChange =async (date) => {
+   await  this.setState({
       date: date,
       time: date,
       jobDate: date,
+      jobTime:date,
 
       appointmentDateString: moment(date).format('DD-MM-YYYY'),
       appointmentTimeString: moment(date).format('dd:hh:mm'),
+      jobTimeString: moment(date).format('dd:hh:mm'),
       jobDateString: moment(date).format('YYYY-MM-DD'),
     })
+    console.log(this.state.jobTime)
   }
 
 
   componentDidMount = async () => {
     let id = this.props.match.params.id
     console.log(id)
+
+    await this.setState({
+      userId:this.props.match.params.id
+    })
 
 
 
@@ -343,6 +351,10 @@ class PreviewProfile extends Component {
     // setInterval(() => {
     await this.props.FetchProviders();
     await this.props.FetchServices(id)
+    const obj={
+      _id:id
+    }
+    await this.props.FetchRatings(obj)
     // }, 1000);
     let profile = this.props.providers.length != 0 ? this.props.providers.profiles.filter(item => item.user == id) : ""
 
@@ -409,7 +421,9 @@ class PreviewProfile extends Component {
       sellerId: this.props.match.params.id,
       amount: this.state.amount,
       coverLetter: this.state.jobCoverLetter,
-      jobDate: this.state.jobDateString
+      jobDate: this.state.jobDateString,
+      jobTime:this.state.jobTimeString,
+      service:this.state.service
     }
     this.setState({
       requested: true
@@ -420,7 +434,8 @@ class PreviewProfile extends Component {
       sellerId: '',
       amount: '',
       coverLetter: '',
-      jobDate: this.state.jobDateString
+      jobDate: this.state.jobDateString,
+      service:""
     })
   }
   render() {
@@ -428,7 +443,11 @@ class PreviewProfile extends Component {
     //   return <Redirect to="/auth/login"/>
     // }
     const { classes } = this.props;
+    
 
+   
+
+        
 
     return (
       <>
@@ -523,6 +542,17 @@ class PreviewProfile extends Component {
                       Send Job Request
                   </NavLink>
                   </NavItem>
+                  <NavItem>
+                    <NavLink
+                      style={{ cursor: 'pointer' }}
+                      className={` font-weight-bold ${this.state.activeTab === "5" ? "active" : ""}`}
+                      onClick={() => {
+                        this.toggle("5");
+                      }}
+                    >
+                      Customer Reviews
+                  </NavLink>
+                  </NavItem>
 
 
                 </Nav>
@@ -550,12 +580,42 @@ class PreviewProfile extends Component {
                               )
                             }) : <>
                               <Col className="ml-auto mr-auto mt-5" lg="7" md="4" xs="4">
-                                <Loader
-                                  type="TailSpin"
-                                  color="red"
-                                  height={20}
-                                  width={30}
-                                />
+                              <p className="text-danger text-upercase font-weight-bold font-italic">No services  Found !</p>
+                              </Col>
+                            </>}
+
+                          </Col>
+
+                        </Row>
+                      </li>
+
+                    </ul>
+                  </Col>
+                </Row>
+              </TabPane>
+              <TabPane tabId="5" id="follows">
+                <Row>
+                  <Col className="ml-auto mr-auto" md="12">
+                    <ul className="list-unstyled follows">
+                      <li>
+                        <Row>
+
+                          <Col className="ml-auto mr-auto" lg="7" md="4" xs="4">
+                            {this.props.reviews.length != 0 ? this.props.reviews.map((items, index) => {
+                              return (
+                                <>
+                                  <h6>
+                                    {items.buyer.fullName} <br />
+                                    <small>{items.rating.feedback} </small><br></br>
+                                    <small>{items.rating.service} </small>
+                                    <small>{items.rating.rating}&nbsp;&nbsp;<i class="fas fa-sm text-warning fa-star"></i> </small>
+                                  </h6>
+                                  <hr></hr>
+                                </>
+                              )
+                            }) : <>
+                              <Col className="ml-auto mr-auto mt-5" lg="7" md="4" xs="4">
+                              <p className="text-danger text-upercase font-weight-bold font-italic">No reviews  Found !</p>
                               </Col>
                             </>}
 
@@ -585,6 +645,7 @@ class PreviewProfile extends Component {
                         id="date-picker-inline"
                         label="Select Date"
                         value={this.state.date}
+                        minDate={this.state.date}
                         varient="dialog"
                         onChange={this.handleDateChange}
                         KeyboardButtonProps={{
@@ -659,12 +720,40 @@ class PreviewProfile extends Component {
                       />
                     </MuiPickersUtilsProvider>
 
+                    <MuiPickersUtilsProvider className="mt-3" utils={DateFnsUtils}>
+                      <KeyboardTimePicker
+                        fullWidth
+                        varient="dialog"
+                        margin="normal"
+                        id="time-picker"
+                        label="Select Time"
+                        value={this.state.jobTime}
+                        onChange={this.handleDateChange}
+                        KeyboardButtonProps={{
+                          'aria-label': 'change time',
+                        }}
+                        required
+                      />
+                    </MuiPickersUtilsProvider>
+
 
                     <Label className="font-weight-bold ">Amount</Label>
                     <Input type="number" min="0" value={this.state.amount} onChange={this.handleChange} name="amount" required />
+                    <Label className="font-weight-bold ">Service</Label>
+                    <Input  type="select" name="service" onChange={this.handleChange} required>
+                        <option value="" disabled selected>Select Service</option>
+                        {this.props.services.length!=0?this.props.services.map((items,index)=>{
+                          return(
+                            <option value={items.title}>{items.title}</option>
+                          )
+                        }):"loading"}
+                       
+                       
 
+                      </Input>
                     <Label className="font-weight-bold ">Cover Letter</Label>
                     <Input type="textarea" rows="6" value={this.state.jobCoverLetter} onChange={this.handleChange} name="jobCoverLetter" required />
+                   
 
                     <Alerts />
 
@@ -697,7 +786,8 @@ const mapStateToProps = (state) => ({
   auth: state.auth,
   providers: state.profile.providers,
   avatar: state.profile.avatar,
-  services: state.service.services
+  services: state.service.services,
+  reviews:state.profile.reviews
 
 });
-export default compose(connect(mapStateToProps, { FetchProviders, AddJobRequest, FetchServices, AddAppointment }), withStyles(styles, { withTheme: true }))(PreviewProfile);
+export default compose(connect(mapStateToProps, { FetchProviders, AddJobRequest,FetchRatings, FetchServices, AddAppointment }), withStyles(styles, { withTheme: true }))(PreviewProfile);

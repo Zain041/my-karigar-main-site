@@ -801,6 +801,10 @@ class ProviderProfile extends Component {
                       <p>{date}</p>
                       <Label className="font-weight-bold">Price</Label>
                       <p>{items.request.amount} &nbsp;PKR</p>
+                      <Label className="font-weight-bold">Time</Label>
+                      <p>{items.request.jobTime} &nbsp;PM</p>
+                      <Label className="font-weight-bold">Service</Label>
+                      <p>{items.request.service}</p>
 
                       <Button onClick={ 
                          async ()=>{
@@ -876,12 +880,7 @@ class ProviderProfile extends Component {
              </Col>
              </Row>
             </TabPane>
-            <TabPane className="text-center" tabId="7" id="following">
-              <h3 className="text-muted">Write your Enguiry Here</h3>
-              <Button className="btn-round" color="warning">
-                Submit
-              </Button>
-            </TabPane>
+           
             <TabPane className="text-center" tabId="8" id="following">
             <Row>
               <Col md={9} className="mx-auto">
@@ -899,6 +898,12 @@ class ProviderProfile extends Component {
                       <p>{date}</p>
                       <Label className="font-weight-bold">Price</Label>
                       <p>{items.request.amount} &nbsp;PKR</p>
+                      <Label className="font-weight-bold">Time</Label>
+                      <p>{items.request.jobTime} &nbsp;PM</p>
+                      <Label className="font-weight-bold">Service</Label>
+                      <p>{items.request.service}</p>
+                     
+
 
                       <Button onClick={ 
                          async ()=>{
@@ -1016,18 +1021,7 @@ class ProviderProfile extends Component {
              </Row>
                 
             </TabPane>
-            <TabPane className="text-center" tabId="10" id="following">
-              <h3 className="text-muted">Write your Enguiry Here</h3>
-              <Button className="btn-round" color="warning">
-                Submit
-              </Button>
-            </TabPane>
-            <TabPane className="text-center" tabId="11" id="following">
-              <h3 className="text-muted">Write your Enguiry Here</h3>
-              <Button className="btn-round" color="warning">
-                Submit
-              </Button>
-            </TabPane>
+           
             <TabPane className="text-center" tabId="12" id="following">
             <Row>
               <Col md={9} className="mx-auto">
@@ -1065,12 +1059,7 @@ class ProviderProfile extends Component {
              </Col>
              </Row>
             </TabPane>
-            <TabPane className="text-center" tabId="4" id="following">
-              <h3 className="text-muted">Write your Enguiry Here</h3>
-              <Button className="btn-round" color="warning">
-                Submit
-              </Button>
-            </TabPane>
+            
             <TabPane className="text-center" tabId="13" id="following">
             <Row>
               <Col md={9} className="mx-auto">

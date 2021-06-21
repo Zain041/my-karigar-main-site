@@ -211,14 +211,14 @@ export const AcceptJobOffers = (id) => async dispatch => {
 
 export const SendJobOffer = (offer) => async dispatch => {
 
-  console.log("id", offer)
+  
 
 
   try {
 
     console.log("inside try")
     let { data } = await jobRepository.SendJobOffer(offer)
-    console.log("request", data);
+   
     dispatch({
       type: SEND_JOBOFFER_SUCCESS,
       payload: data
@@ -641,6 +641,8 @@ export const FetchJobs = () => async dispatch => {
 
 
 }
+
+
 
 
 
